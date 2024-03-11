@@ -187,7 +187,7 @@ print(dependent_columns)
 independent_columns = env.config['action_space']
 
 
-
+'''
 ## validation - forward simulate over subset of training data
 
 # simulate the first couple days by specifying the rainfall forecast as initial conditions
@@ -286,7 +286,7 @@ plt.show()
 #plt.close()
 
 # end validation
-
+'''
 
 
 
@@ -296,8 +296,8 @@ plt.show()
 # reindex the response to integer timestep
 response.index = np.arange(0,len(response),1)
 
-max_iter = 250
-max_transition_state_dim = 25
+max_iter = 0#250
+max_transition_state_dim = 3#25
 
 
 # learn the dynamics
@@ -306,9 +306,14 @@ lti_plant_approx = modpods.lti_system_gen(connectivity,response,independent_colu
                                           swmm=True,bibo_stable=False,max_transition_state_dim=max_transition_state_dim)
 
 
-# pickle the plant approximation to load later
-with open("C:/teamwork_without_talking/plant_approx_continuous.pickle", 'wb') as handle:
-    pickle.dump(lti_plant_approx, handle)
+if max_iter < 5:
+    # pickle the plant approximation to load later
+    with open("C:/teamwork_without_talking/plant_approx_continuous_lofi.pickle", 'wb') as handle:
+        pickle.dump(lti_plant_approx, handle)
+else:
+    # pickle the plant approximation to load later
+    with open("C:/teamwork_without_talking/plant_approx_continuous.pickle", 'wb') as handle:
+        pickle.dump(lti_plant_approx, handle)
 '''
 # load the plant approximation
 with open("C:/teamwork_without_talking/plant_approx_continuous.pickle", 'rb') as handle:
@@ -661,9 +666,14 @@ print(newB.loc["('6', 'depthN')"].loc[newB.loc["('6', 'depthN')"] != 0])
 
 lti_plant_approx_discrete = ct.ss(newA, newB, newC, 0, inputs = newB.columns, outputs=newC.index, states=newA.columns,dt = 1)
 
-# pickle the discrete time plant approximation to load later
-with open("C:/teamwork_without_talking/plant_approx_discrete_w_predictions.pickle", 'wb') as handle:
-    pickle.dump(lti_plant_approx_discrete, handle)
+if max_iter < 5:
+        # pickle the discrete time plant approximation to load later
+    with open("C:/teamwork_without_talking/plant_approx_discrete_w_predictions_lofi.pickle", 'wb') as handle:
+        pickle.dump(lti_plant_approx_discrete, handle)
+else:
+    # pickle the discrete time plant approximation to load later
+    with open("C:/teamwork_without_talking/plant_approx_discrete_w_predictions.pickle", 'wb') as handle:
+        pickle.dump(lti_plant_approx_discrete, handle)
 
 
 print("disturbance prediction matrices updated")
