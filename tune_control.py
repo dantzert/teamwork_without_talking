@@ -19,8 +19,8 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'local' 
-verbose = True
+control_scenario = 'centralized' 
+verbose = False
 
 print("evaluating ", control_scenario)
 
@@ -182,17 +182,18 @@ g = 32.2 # ft / s^2
 if control_scenario == 'centralized':
     packet_loss_chances = [0.0]
 else:
-    #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9999]
-    packet_loss_chances = [0.99] # for dev
+    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9999]
+    #packet_loss_chances = [0.999] # for dev
     # at the low end no chance of packet loss, report every 5 minutes
     # at the high end, expect to report every 35 days
 
 for packet_loss_chance in packet_loss_chances:
+    print("\nevaluating packet loss chance: ", packet_loss_chance)
 
     env = pystorms.scenarios.gamma()
     env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp")
     # if you want a shorter timeframe than the entire summer so you can debug the controller
-    env.env.sim.start_time = datetime.datetime(2020,5,13,0,0)
+    env.env.sim.start_time = datetime.datetime(2020,5,14,0,0)
     env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 
     #env.env.sim.end_time = datetime.datetime(2020,6,15,0,0) 
     env.env.sim.start()
@@ -202,9 +203,6 @@ for packet_loss_chance in packet_loss_chances:
     # controlled and observed basins will be: 1, 4, 6, 7, 8, and 10
     env.config['action_space'] = [env.config['action_space'][i] for i in [0,3,5,6,7,9]]
     env.config['states'] = [env.config['states'][i] for i in [0,3,5,6,7,9]]
-
-    print(env.config['action_space'])
-    print(env.config['states'])
 
     # grab the rain gages
     # could define them as states through pystorms, but this will be easier
@@ -531,12 +529,14 @@ for packet_loss_chance in packet_loss_chances:
                         elif u_open_pct[idx,0]< 0: # if the calculated open percentage is less than 0, the orifice is fully closed
                             u_open_pct[idx,0] = 0
 
-                    elif not reported[key] and env.state()[idx] / basin_max_depths[idx] < filling_degree_threshold: # if the control point didn't report this timestep and is less than 25% full
-                        # don't change u_open_pct from the last time step (zero order hold on open percentage (not discharge) )
+                    elif not reported[key] and env.state()[idx] / basin_max_depths[idx] < filling_degree_threshold: # if the control point didn't report this timestep and is less than X% full
+                        # don't change u_open_pct from the last time step  - zero order hold on open percentage (not discharge)
                         pass
-                    else: # we didn't connect and we're more than X full
+                    elif not reported[key] and env.state()[idx] / basin_max_depths[idx] >= filling_degree_threshold: # we didn't connect and we're more than X full
                         u_open_pct[idx,0] = (env.state()[idx] / basin_max_depths[idx] - filling_degree_threshold) / (1-filling_degree_threshold) 
                         # level controller which is shut at X% full and fully open at 100% full
+                    else:
+                        print("error in control logic. should never reach this point")
 
                 # cast u_open_pct to be a numpy array
                 u_open_pct = np.array(u_open_pct)
@@ -572,8 +572,8 @@ for packet_loss_chance in packet_loss_chances:
             # the total cost is the number of positive entries in value multiplied by the cost of flooding (10e6)
             # find the number of positive entries in value
             num_positive = sum([1 for x in value if x > 0])
-            print(key,"{:.4e}".format(num_positive*(10**6)))
-            flood_cost += num_positive*(10**6)
+            print(key,"{:.4e}".format(num_positive*(10**2)))
+            flood_cost += num_positive*(10**2)
 
     flow_cost = 0
     for key,value in env.data_log['flow'].items():
@@ -586,7 +586,10 @@ for packet_loss_chance in packet_loss_chances:
     print("flow cost: {:.4e}".format(flow_cost))
     print("TSS loading (kg): {:.4e}".format(total_TSS_loading/2.2))
     print("total cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
-
+    # save the costs to a csv
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020_costs.csv"), 'w') as f:
+        f.write("flood cost, flow cost, TSS loading (kg), total cost\n")
+        f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost,flow_cost,total_TSS_loading/2.2,flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
 
     fig,axes = plt.subplots(6,2,figsize=(16,8))
     axes[0,0].set_title("Valves",fontsize='xx-large')
@@ -606,6 +609,12 @@ for packet_loss_chance in packet_loss_chances:
             axes[idx,0].legend(fontsize='xx-large')
         if idx != 5:
             axes[idx,0].set_xticks([])
+        if idx == 2: # valve 6
+            # write a text box indicating the costs
+            axes[idx,0].text(0.3,0.75,"Flood Cost: {:.4e}".format(flood_cost),fontsize='large',horizontalalignment='center',verticalalignment='center',transform=axes[idx,0].transAxes)
+            axes[idx,0].text(0.3,0.55,"Flow Cost: {:.4e}".format(flow_cost),fontsize='large',horizontalalignment='center',verticalalignment='center',transform=axes[idx,0].transAxes)
+            axes[idx,0].text(0.3,0.35,"TSS Loading (kg): {:.4e}".format(total_TSS_loading/2.2),fontsize='large',horizontalalignment='center',verticalalignment='center',transform=axes[idx,0].transAxes)
+            axes[idx,0].text(0.3,0.15,"Total Cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3),fontsize='large',horizontalalignment='center',verticalalignment='center',transform=axes[idx,0].transAxes)
        
 
     # plot the storage nodes
@@ -620,8 +629,15 @@ for packet_loss_chance in packet_loss_chances:
             axes[idx,1].set_xticks([])
 
     plt.tight_layout()
-    plt.savefig(str("C:/teamwork_without_talking/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.png"),dpi=450)
-    plt.savefig(str("C:/teamwork_without_talking/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.svg"),dpi=450)
-    plt.show(block=True)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.png"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.svg"),dpi=450)
+    #plt.show(block=True)
     #plt.close('all')
+
+    # save the data log
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.pkl"), 'wb') as f:
+        pickle.dump(env.data_log, f)
+    # this is only the "truth" data log, the values which actually happened.
+    # when you want to track teammate state inference errors, you'll need to save the system estimates as well
+
             
