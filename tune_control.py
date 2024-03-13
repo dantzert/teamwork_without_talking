@@ -183,7 +183,7 @@ if control_scenario == 'centralized':
     packet_loss_chances = [0.0]
 else:
     #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
-    packet_loss_chances = [0.9993,0.9995, 0.9997] # for dev
+    packet_loss_chances = [0.9993,0.9995, 0.9997,0.9999] # for dev
     #packet_loss_chances = [0.999] # for dev
     # at the low end no chance of packet loss, report every 5 minutes
     # at the high end, expect to report every 35 days
@@ -573,8 +573,8 @@ for packet_loss_chance in packet_loss_chances:
             # the total cost is the number of positive entries in value multiplied by the cost of flooding (10e6)
             # find the number of positive entries in value
             num_positive = sum([1 for x in value if x > 0])
-            print(key,"{:.4e}".format(num_positive*(10**2)))
-            flood_cost += num_positive*(10**2)
+            print(key,"{:.4e}".format(num_positive*(10**1)))
+            flood_cost += num_positive*(10**1)
 
     flow_cost = 0
     for key,value in env.data_log['flow'].items():
