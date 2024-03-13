@@ -19,8 +19,8 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'centralized' 
-verbose = False
+control_scenario = 'hi-fi' 
+verbose = True
 
 print("evaluating ", control_scenario)
 
@@ -182,7 +182,8 @@ g = 32.2 # ft / s^2
 if control_scenario == 'centralized':
     packet_loss_chances = [0.0]
 else:
-    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9999]
+    #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
+    packet_loss_chances = [0.9993,0.9995, 0.9997] # for dev
     #packet_loss_chances = [0.999] # for dev
     # at the low end no chance of packet loss, report every 5 minutes
     # at the high end, expect to report every 35 days
@@ -193,8 +194,8 @@ for packet_loss_chance in packet_loss_chances:
     env = pystorms.scenarios.gamma()
     env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp")
     # if you want a shorter timeframe than the entire summer so you can debug the controller
-    env.env.sim.start_time = datetime.datetime(2020,5,14,0,0)
-    env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 
+    #env.env.sim.start_time = datetime.datetime(2020,5,14,0,0)
+    #env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 
     #env.env.sim.end_time = datetime.datetime(2020,6,15,0,0) 
     env.env.sim.start()
     done = False
@@ -429,7 +430,7 @@ for packet_loss_chance in packet_loss_chances:
                 u_open_pct = np.array(u_open_pct)
                 total_TSS_loading = pyswmm.Links(env.env.sim)["O1"].total_loading['TSS']
                         
-                if verbose and env.env.sim.current_time.minute == 0 and env.env.sim.current_time.hour == 0:
+                if verbose and env.env.sim.current_time.minute == 0 and env.env.sim.current_time.hour == 0 and env.env.sim.current_time.day % 10 == 0:
                     # make a dataframe with columns: value, server, 1, 4, 6, 7, 8, 10 and rows: the output labels
                     # fill the entries with the system estimates for each control point
                     estimates_to_print = pd.DataFrame(columns = ['truth','server','1','4','6','7','8','10'],index=lti_plant_approx.output_labels)
@@ -542,7 +543,7 @@ for packet_loss_chance in packet_loss_chances:
                 u_open_pct = np.array(u_open_pct)
                 total_TSS_loading = pyswmm.Links(env.env.sim)["O1"].total_loading['TSS']
                         
-                if verbose and env.env.sim.current_time.minute == 0 and env.env.sim.current_time.hour == 0:
+                if verbose and env.env.sim.current_time.minute == 0 and env.env.sim.current_time.hour == 0 and env.env.sim.current_time.day % 10 == 0:
                     # make u_open_pct_print by appending four nan values to u_open_pct
                     u_open_pct_print = np.r_[u_open_pct,np.nan*np.ones((4,1))]
                     print("output_labels , u_open_pct , yhat , y_measured , y_error")

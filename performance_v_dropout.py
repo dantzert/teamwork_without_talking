@@ -8,7 +8,7 @@ import datetime
 
 year = '2020' # '2020' or '2021'
 control_scenarios = ['hi-fi','lo-fi','local']
-packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9999]
+packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
 for control_scenario in control_scenarios:

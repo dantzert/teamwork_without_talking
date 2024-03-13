@@ -52,6 +52,7 @@ fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.39,0.32], transform=ax.t
 fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.29,0.24], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 4 to 1
 
 # if it's hard to see, you might want to bound the x-axis to a smaller range. just use set_xlim
+ax.set_xlim([datetime.datetime(2020, 5, 1, 0, 0), datetime.datetime(2020, 7, 1, 0, 10)])
 
 # make the y label horizontal
 ax.set_ylabel('Node 10\nDepth (m)',fontsize='x-large',rotation=0,labelpad=30)
@@ -133,4 +134,8 @@ ax.set_ylabel('RMSE (m)',fontsize='x-large')
 ax.set_xlabel('Position of predictor relative to target',fontsize='x-large')
 ax.set_title('Relative network position influences value of local measurements in teammate state inference')
 plt.tight_layout()
+# save
+plt.savefig("C:/teamwork_without_talking/results/teammate_inference_relative_position.png",dpi=450)
+plt.savefig("C:/teamwork_without_talking/results/teammate_inference_relative_position.svg",dpi=450)
+
 plt.show()
