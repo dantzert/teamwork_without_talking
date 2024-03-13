@@ -14,9 +14,9 @@ records = {}
 for perspective in perspectives:
     records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.999_summer_2020_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
     
-# plot the estimated state of node 10 from the perspective of: truth, 1, 4, and 8
+# plot the estimated state of node X from the perspective of: truth, a, b, and c
 fig, ax = plt.subplots(figsize=(12,9))
-for perspective in ['truth','1','4','8']:
+for perspective in ['truth','1','4','7']:
     if perspective == 'truth':
         color = 'black'
         style = 'solid'
@@ -26,7 +26,7 @@ for perspective in ['truth','1','4','8']:
     elif perspective == '4':
         color = 'green'
         style = 'dotted'
-    elif perspective == '8':
+    elif perspective == '7':
         color = 'red'
         style = 'dashdot'
     ax.plot(records[perspective]['10']*ft2meters, label=perspective,alpha=0.6,linewidth=5,color=color,linestyle = style)
@@ -35,22 +35,23 @@ ax.legend(fontsize='xx-large',loc='upper right')
 
 # annotate the RMSE between 1,4, and 8 and the truth
 idx = 0
-for perspective in ['1','4','8']:
+for perspective in ['1','4','7']:
     rmse = np.sqrt(np.mean((records[perspective]['10']-records['truth']['10'])**2))
-    ax.text(0.5,0.9-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + "m",transform=ax.transAxes,fontsize='x-large')
+    ax.text(0.7,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + "m",transform=ax.transAxes,fontsize='x-large')
     idx += 1
     
 # draw a little sketch in text that shows the network topology: 10 and 8 both connect to 4, 4 connects to 1
 ax.text(0.5,0.4,"10",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.6,0.4,"8",transform=ax.transAxes,fontsize='xx-large')
+ax.text(0.6,0.4,"7",transform=ax.transAxes,fontsize='xx-large')
 ax.text(0.55,0.3,"4",transform=ax.transAxes,fontsize='xx-large')
 ax.text(0.55,0.2,"1",transform=ax.transAxes,fontsize='xx-large')
 skeleton_linewidth = 2
 skeleton_alpha = 0.5
 fig.add_artist(matplotlib.lines.Line2D([0.53, 0.55], [0.39,0.32], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 10 to 4
-fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.39,0.32], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 6 to 4
+fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.39,0.32], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 7 to 4
 fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.29,0.24], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 4 to 1
 
+# if it's hard to see, you might want to bound the x-axis to a smaller range. just use set_xlim
 
 # make the y label horizontal
 ax.set_ylabel('Node 10\nDepth (m)',fontsize='x-large',rotation=0,labelpad=30)
@@ -59,8 +60,8 @@ plt.tight_layout()
 # save the figure
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example.png",dpi=450)
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example.svg",dpi=450)
-#plt.show()
-plt.close('all')
+plt.show()
+#plt.close('all')
     
 
 
@@ -81,8 +82,8 @@ ax.set_xticks(np.arange(len(rmse.columns)))
 ax.set_yticks(np.arange(len(rmse.index)))
 ax.set_xticklabels(rmse.columns)
 ax.set_yticklabels(rmse.index)
-ax.set_ylabel("predictor node")
-ax.set_xlabel("target node")
+ax.set_ylabel("target node")
+ax.set_xlabel("predictor node")
 for i in range(len(rmse.index)):
     for j in range(len(rmse.columns)):
         text = ax.text(j, i, round(rmse.values[i, j],2), ha="center", va="center", color="w")
@@ -109,7 +110,7 @@ diff_branch = [rmse.loc['7','8'], rmse.loc['8','7'],
 
 # check that the length of those 7 arrays together adds up to 30
 print(len(up3) + len(up2) + len(up1) + len(down1) + len(down2) + len(down3) + len(diff_branch))
-
+'''
 difference_over_distance = pd.DataFrame(index = ['up3','up2','up1','down1','down2','down3','diff_branch'])# don't fair well... (flatland cavalry)
 difference_over_distance.loc['up3','mean'] = np.mean(up3)
 difference_over_distance.loc['up2','mean'] = np.mean(up2)
@@ -118,17 +119,18 @@ difference_over_distance.loc['down1','mean'] = np.mean(down1)
 difference_over_distance.loc['down2','mean'] = np.mean(down2)
 difference_over_distance.loc['down3','mean'] = np.mean(down3)
 difference_over_distance.loc['diff_branch','mean'] = np.mean(diff_branch)
-
+'''
 
 # now plot a line chart where each xtick is one of the 7 bins, and the y value is the average RMSE in that bin
 fig, ax = plt.subplots(figsize=(12,9))
-ax.plot(difference_over_distance.index,difference_over_distance['mean'],linewidth=5)
+# plot box plots of each bin, labeled by their names. in the order up3, up2, up1, down1, down2, down3, diff_branch
+#ax.boxplot([up3,up2,up1,down1,down2,down3,diff_branch],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream','different branch'])
+# exclude "different branch" for now
+ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'])
+
 ax.legend(fontsize='x-large')
 ax.set_ylabel('RMSE (m)',fontsize='x-large')
 ax.set_xlabel('Position of predictor relative to target',fontsize='x-large')
-ax.set_title('RMSE between every pair of nodes as a function of relative network position')
+ax.set_title('Relative network position influences value of local measurements in teammate state inference')
 plt.tight_layout()
 plt.show()
-
-
-        
