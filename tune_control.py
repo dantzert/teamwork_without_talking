@@ -19,7 +19,7 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'hi-fi' 
+control_scenario = 'local' 
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -182,8 +182,8 @@ g = 32.2 # ft / s^2
 if control_scenario == 'centralized':
     packet_loss_chances = [0.0]
 else:
-    #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
-    packet_loss_chances = [0.9993,0.9995, 0.9997,0.9999] # for dev
+    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
+    #packet_loss_chances = [0.9993,0.9995, 0.9997,0.9999] # for dev
     #packet_loss_chances = [0.999] # for dev
     # at the low end no chance of packet loss, report every 5 minutes
     # at the high end, expect to report every 35 days
