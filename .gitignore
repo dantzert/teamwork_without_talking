@@ -401,3 +401,4 @@ results/centralized_0.0_summer_2020.pkl
 results/hi-fi_0.0_summer_2020.pkl
 results/hi-fi_0.2_summer_2020.pkl
 results/*.pkl
+results\*.pkl
