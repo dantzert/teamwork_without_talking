@@ -127,12 +127,15 @@ fig, ax = plt.subplots(figsize=(12,9))
 # plot box plots of each bin, labeled by their names. in the order up3, up2, up1, down1, down2, down3, diff_branch
 #ax.boxplot([up3,up2,up1,down1,down2,down3,diff_branch],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream','different branch'])
 # exclude "different branch" for now
-ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'])
-
-ax.legend(fontsize='x-large')
-ax.set_ylabel('RMSE (m)',fontsize='x-large')
+#ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'])
+# do the same box plot command as above, but make every line thicker
+l_width = 5
+ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'],
+           boxprops=dict(linewidth=l_width),whiskerprops=dict(linewidth=l_width),capprops=dict(linewidth=l_width),medianprops=dict(linewidth=l_width))
+#ax.legend(fontsize='x-large')
+ax.set_ylabel('RMSE \n(m)',fontsize='x-large',rotation=0,labelpad=25)
 ax.set_xlabel('Position of predictor relative to target',fontsize='x-large')
-ax.set_title('Relative network position influences value of local measurements in teammate state inference')
+#ax.set_title('Relative network position influences value of local measurements in teammate state inference')
 plt.tight_layout()
 # save
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_relative_position.png",dpi=450)

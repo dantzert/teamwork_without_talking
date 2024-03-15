@@ -38,14 +38,20 @@ for i in range(len(expected_report_frequency)):
 centralized_cost = pd.read_csv("C:/teamwork_without_talking/results/centralized_0.0_summer_2020_costs.csv")[' total cost'][0]
 
 # plot the scores with cost as the y axis and expected report frequency as the x axis
+l_width = 5
 fig, ax = plt.subplots(figsize=(12,9))
-ax.semilogy(expected_report_frequency, scores.loc['hi-fi'], label='hi-fi', linestyle='dashed',color='blue', marker='o')
-ax.semilogy(expected_report_frequency, scores.loc['lo-fi'], label='lo-fi', linestyle='dotted',color='orange', marker='o')
-ax.semilogy(expected_report_frequency, scores.loc['local'], label='local', linestyle='dashdot', color='green',marker='o')
-ax.axhline(y=centralized_cost, linestyle='solid', label='centralized',color='black')
-ax.set_xlabel('Expected Report Frequency',fontsize='large')
-ax.set_ylabel('Cost',fontsize='large')
-ax.legend(loc='upper left',fontsize='large')
+ax.semilogy(expected_report_frequency, scores.loc['hi-fi'], label='hi-fi', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
+ax.semilogy(expected_report_frequency, scores.loc['lo-fi'], label='lo-fi', linestyle='dotted',color='orange', marker='o', linewidth=l_width, markersize = 3*l_width)
+ax.semilogy(expected_report_frequency, scores.loc['local'], label='local', linestyle='dashdot', color='green',marker='o', linewidth=l_width, markersize = 3*l_width)
+ax.axhline(y=centralized_cost, linestyle='solid', label='centralized',color='black', linewidth=l_width)
+ax.set_xlabel('Expected Report Frequency',fontsize='xx-large')
+ax.set_ylabel('Cost',fontsize='xx-large')
+# rotate the y label
+ax.yaxis.label.set_rotation(0)
+ax.legend(loc='upper left',fontsize='xx-large')
+# make the y ticks xxL and the x ticks xL
+plt.yticks(fontsize='xx-large')
+plt.xticks(fontsize='x-large')
 plt.xticks(rotation=45)
 plt.tight_layout()
 # save the plot
