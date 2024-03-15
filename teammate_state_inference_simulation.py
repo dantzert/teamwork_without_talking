@@ -21,7 +21,7 @@ np.random.seed(0)
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
 control_scenario = 'hi-fi' 
 verbose = True
-packet_loss_chance = 0.999
+packet_loss_chance = 0.9999
 year = '2020'
 
 print("evaluating ", control_scenario)

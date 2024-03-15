@@ -11,7 +11,7 @@ from seaborn._core.properties import LineStyle
 
 year = '2020' # or '2021'
 duration = 'storm' # 'full' or 'storm'
-dropout_rate = '0.999_' # many options for this one, see tune_control.py
+dropout_rate = '0.99_' # many options for this one, see tune_control.py
 # include the _ after to make sure you don't include file names for which this is a substring (e.g., 0.99 also grabs 0.999 and 0.9999)
 control_scenarios = ['centralized','hi-fi','lo-fi','local']
 #control_scenarios = ['centralized','hi-fi']
