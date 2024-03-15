@@ -19,7 +19,7 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'local' 
+control_scenario = 'centralized' 
 verbose = True
 
 print("evaluating ", control_scenario)
