@@ -19,7 +19,8 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'centralized' 
+control_scenario = 'lo-fi' 
+year = '2021' # '2020' or '2021'
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -219,10 +220,10 @@ for packet_loss_chance in packet_loss_chances:
         else: 
             pass
     
-    raingage_J_data = pd.read_csv("C:/teamwork_without_talking/raingage_J_summer_2020.dat",index_col=0,parse_dates=True,sep='\t')
-    raingage_C_data = pd.read_csv("C:/teamwork_without_talking/raingage_C_summer_2020.dat",index_col=0,parse_dates=True,sep='\t')
-    raingage_N_data = pd.read_csv("C:/teamwork_without_talking/raingage_N_summer_2020.dat",index_col=0,parse_dates=True,sep='\t')
-    raingage_S_data = pd.read_csv("C:/teamwork_without_talking/raingage_S_summer_2020.dat",index_col=0,parse_dates=True,sep='\t')
+    raingage_J_data = pd.read_csv(str("C:/teamwork_without_talking/raingage_J_summer_"+str(year) + ".dat"),index_col=0,parse_dates=True,sep='\t')
+    raingage_C_data = pd.read_csv(str("C:/teamwork_without_talking/raingage_C_summer_"+str(year) + ".dat"),index_col=0,parse_dates=True,sep='\t')
+    raingage_N_data = pd.read_csv(str("C:/teamwork_without_talking/raingage_N_summer_"+str(year) + ".dat"),index_col=0,parse_dates=True,sep='\t')
+    raingage_S_data = pd.read_csv(str("C:/teamwork_without_talking/raingage_S_summer_"+str(year) + ".dat"),index_col=0,parse_dates=True,sep='\t')
 
     u = -1.0*np.ones((len(env.config['action_space']),1)) # begin all shut
     u_open_pct = 0.0*np.ones((len(env.config['action_space']),1)) # begin all shut
@@ -588,7 +589,7 @@ for packet_loss_chance in packet_loss_chances:
     print("TSS loading (kg): {:.4e}".format(total_TSS_loading/2.2))
     print("total cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
     # save the costs to a csv
-    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020_costs.csv"), 'w') as f:
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
         f.write("flood cost, flow cost, TSS loading (kg), total cost\n")
         f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost,flow_cost,total_TSS_loading/2.2,flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
 
@@ -630,13 +631,13 @@ for packet_loss_chance in packet_loss_chances:
             axes[idx,1].set_xticks([])
 
     plt.tight_layout()
-    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.png"),dpi=450)
-    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.svg"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".png"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".svg"),dpi=450)
     #plt.show(block=True)
     #plt.close('all')
 
     # save the data log
-    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_2020.pkl"), 'wb') as f:
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".pkl"), 'wb') as f:
         pickle.dump(env.data_log, f)
     # this is only the "truth" data log, the values which actually happened.
     # when you want to track teammate state inference errors, you'll need to save the system estimates as well
