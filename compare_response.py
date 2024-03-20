@@ -10,11 +10,11 @@ from seaborn._core.properties import LineStyle
 
 
 year = '2021' # or '2021'
-duration = 'storm' # 'full' or 'storm'
+duration = 'full' # 'full' or 'storm'
 dropout_rate = '0.9993_' # many options for this one, see tune_control.py
 # include the _ after to make sure you don't include file names for which this is a substring (e.g., 0.99 also grabs 0.999 and 0.9999)
 control_scenarios = ['centralized','hi-fi','lo-fi','local']
-control_scenarios = ['centralized','hi-fi']
+#control_scenarios = ['centralized','hi-fi']
 
 path = "C:/teamwork_without_talking/results/"
 
@@ -107,12 +107,12 @@ for control_scenario in control_scenarios:
         color = 'blue'
         line_style = 'dashed'
     elif control_scenario == 'lo-fi':
-        continue # only do hi-fi and centralized for the conference abstract (simplify things)
+        #continue # only do hi-fi and centralized for the conference abstract (simplify things)
         data = lo_fi_data
         color = 'orange'
         line_style = 'dotted'
     elif control_scenario == 'local':
-        continue
+        #continue
         data = local_data
         color = 'green'
         line_style = 'dashdot'
@@ -225,7 +225,7 @@ for control_scenario in control_scenarios:
 # remove any duplicate entries from the legend handles
 handles, labels = axs[2,1].get_legend_handles_labels()
 by_label = dict(zip(labels, handles))
-axs[2,1].legend(by_label.values(), by_label.keys(),fontsize='x-large', loc='upper right')
+axs[2,1].legend(by_label.values(), by_label.keys(),fontsize='large', loc='upper right')
 
 
 

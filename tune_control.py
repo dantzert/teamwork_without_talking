@@ -19,7 +19,7 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'lo-fi' 
+control_scenario = 'local' 
 year = '2021' # '2020' or '2021'
 verbose = True
 

@@ -8,7 +8,7 @@ import datetime
 
 year = '2021' # '2020' or '2021'
 control_scenarios = ['hi-fi','lo-fi','local']
-control_scenarios = ['hi-fi']
+#control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
@@ -39,10 +39,10 @@ centralized_cost = pd.read_csv(str("C:/teamwork_without_talking/results/centrali
 
 # plot the scores with cost as the y axis and expected report frequency as the x axis
 l_width = 5
-fig, ax = plt.subplots(figsize=(8,6)) # 12x9 for paper figure, smaller for abstract (relatively bigger text)
+fig, ax = plt.subplots(figsize=(12,9)) # 12x9 for paper figure, smaller for abstract (relatively bigger text)
 ax.semilogy(expected_report_frequency, scores.loc['hi-fi'], label='hi-fi', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
-#ax.semilogy(expected_report_frequency, scores.loc['lo-fi'], label='lo-fi', linestyle='dotted',color='orange', marker='o', linewidth=l_width, markersize = 3*l_width)
-#ax.semilogy(expected_report_frequency, scores.loc['local'], label='local', linestyle='dashdot', color='green',marker='o', linewidth=l_width, markersize = 3*l_width)
+ax.semilogy(expected_report_frequency, scores.loc['lo-fi'], label='lo-fi', linestyle='dotted',color='orange', marker='o', linewidth=l_width, markersize = 3*l_width)
+ax.semilogy(expected_report_frequency, scores.loc['local'], label='local', linestyle='dashdot', color='green',marker='o', linewidth=l_width, markersize = 3*l_width)
 ax.axhline(y=centralized_cost, linestyle='solid', label='centralized',color='black', linewidth=l_width)
 ax.set_xlabel('Expected Report Frequency',fontsize='xx-large')
 ax.set_ylabel('Cost',fontsize='xx-large')
