@@ -8,12 +8,16 @@ import datetime
 
 ft2meters = 0.3048
 
+year = "2021" # or "2021"
+
 # for figure 5, just need to load in the timeseries of estiamtes of one node by several other nodes
 perspectives = ['truth','server','1','4','6','7','8','10']
 records = {}
 for perspective in perspectives: # was for 2020, now 2021
-    #records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.999_summer_2020_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
-    records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.9993_summer_2021_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
+    if year == "2020":
+        records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.999_summer_2020_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
+    else:
+        records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.9993_summer_2021_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
     
 # plot the estimated state of node X from the perspective of: truth, a, b, and c
 fig, ax = plt.subplots(figsize=(12,9))
@@ -30,7 +34,7 @@ for perspective in ['truth','4','6','7']:
     elif perspective == '7':
         color = 'red'
         style = 'dashdot'
-    ax.plot(records[perspective]['8']*ft2meters, label=perspective,alpha=0.6,linewidth=5,color=color,linestyle = style)
+    ax.plot(records[perspective]['8']*ft2meters, label=perspective,alpha=0.6,linewidth=7,color=color,linestyle = style)
 
 ax.legend(fontsize='xx-large',loc='upper left')
 
@@ -38,19 +42,22 @@ ax.legend(fontsize='xx-large',loc='upper left')
 idx = 0
 for perspective in ['4','6','7']:
     rmse = np.sqrt(np.mean((records[perspective]['8']-records['truth']['10'])**2))
-    ax.text(0.2,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + "m",transform=ax.transAxes,fontsize='x-large')
+    ax.text(0.2,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + " m",transform=ax.transAxes,fontsize='xx-large')
+    # add the NSE as well
+    #nse = 1 - np.sum((records[perspective]['8']-records['truth']['10'])**2)/np.sum((records['truth']['10']-np.mean(records['truth']['10']))**2)
+    #ax.text(0.2,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + "m, NSE: " + str(round(nse,2)),transform=ax.transAxes,fontsize='x-large')
     idx += 1
     
 # draw a little sketch in text that shows the network topology: 10 and 8 both connect to 4, 4 connects to 1
-ax.text(0.51,0.3,"7",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.6,0.3,"8",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.55,0.2,"6",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.55,0.1,"4",transform=ax.transAxes,fontsize='xx-large')
+ax.text(0.51,0.25,"7",transform=ax.transAxes,fontsize='xx-large')
+ax.text(0.6,0.25,"8",transform=ax.transAxes,fontsize='xx-large')
+ax.text(0.55,0.15,"6",transform=ax.transAxes,fontsize='xx-large')
+ax.text(0.55,0.05,"4",transform=ax.transAxes,fontsize='xx-large')
 skeleton_linewidth = 2
 skeleton_alpha = 0.5
-fig.add_artist(matplotlib.lines.Line2D([0.53, 0.55], [0.29,0.22], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 10 to 4
-fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.29,0.22], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 7 to 4
-fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.19,0.14], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 4 to 1
+fig.add_artist(matplotlib.lines.Line2D([0.53, 0.55], [0.24,0.17], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 10 to 4
+fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.25,0.17], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 7 to 4
+fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.14,0.09], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 4 to 1
 
 # if it's hard to see, you might want to bound the x-axis to a smaller range. just use set_xlim
 #ax.set_xlim([datetime.datetime(2020, 5, 1, 0, 0), datetime.datetime(2020, 7, 1, 0, 10)])
@@ -59,13 +66,17 @@ ax.set_xlim([datetime.datetime(2021,4,15,0,0),datetime.datetime(2021,5,15,0,10)]
 ax.set_ylim([-1,1.5])
 
 # make the y label horizontal
-ax.set_ylabel('Node 8\nDepth (m)',fontsize='x-large',rotation=0,labelpad=30)
+ax.set_ylabel('Node 8\nDepth (m)',fontsize='xx-large',rotation=0,labelpad=30)
+# make the x and y ticks xlarge
+ax.tick_params(axis='both', which='major', labelsize='xx-large')
+# put half as many ticks on the x-axis
+ax.xaxis.set_major_locator(plt.MaxNLocator(5))
 #ax.set_title("Dynamically coupled nodes have better estimates of each other's state",fontsize='xx-large')
 plt.tight_layout()
 # save the figure
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example.png",dpi=450)
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example.svg",dpi=450)
-plt.show()
+#plt.show()
 #plt.close('all')
     
 
@@ -78,7 +89,15 @@ rmse = pd.DataFrame(index = ['1','4','6','7','8','10'],columns = ['1','4','6','7
 for target in rmse.index:
     for predictor in rmse.columns:
         rmse.loc[target,predictor] = np.sqrt(np.mean((records[predictor][target]-records['truth'][target])**2))
-        
+        # try NSE instead
+        #rmse.loc[target,predictor] = 1 - np.sum((records[predictor][target]-records['truth'][target])**2)/np.sum((records['truth'][target]-np.mean(records['truth'][target]))**2)
+        # try MAE
+        #rmse.loc[target,predictor] = np.mean(np.abs(records[predictor][target]-records['truth'][target]))
+        # try kling-gupta efficiency
+        #rmse.loc[target,predictor] = 1 - np.sum((records[predictor][target]-records['truth'][target])**2)/np.sum((np.abs(records[predictor][target]-np.mean(records['truth'][target])) + np.abs(records['truth'][target]-np.mean(records['truth'][target]))**2))
+        # try normalized RMSE
+        #rmse.loc[target,predictor] = np.sqrt(np.mean((records[predictor][target]-records['truth'][target])**2))/np.mean(np.abs(records['truth'][target]-np.mean(records['truth'][target])))
+
 print(rmse)
 # plot the RMSE between every pair of nodes as a heatmap (not the final figure, but helpful)
 fig, ax = plt.subplots(figsize=(12,9))
@@ -93,6 +112,7 @@ for i in range(len(rmse.index)):
     for j in range(len(rmse.columns)):
         text = ax.text(j, i, round(rmse.values[i, j],2), ha="center", va="center", color="w")
 ax.set_title("RMSE between every pair of nodes")
+
 plt.tight_layout()
 #plt.show()
 plt.close('all')
@@ -137,12 +157,14 @@ l_width = 5
 ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'],
            boxprops=dict(linewidth=l_width),whiskerprops=dict(linewidth=l_width),capprops=dict(linewidth=l_width),medianprops=dict(linewidth=l_width))
 #ax.legend(fontsize='x-large')
-ax.set_ylabel('RMSE \n(m)',fontsize='x-large',rotation=0,labelpad=25)
-ax.set_xlabel('Position of predictor relative to target',fontsize='x-large')
+ax.set_ylabel('RMSE \n(m)',fontsize='xx-large',rotation=0,labelpad=25)
+ax.set_xlabel('Position of predictor relative to target',fontsize='xx-large')
+ax.tick_params(axis='y', which='major', labelsize='xx-large')
+ax.tick_params(axis='x', which='major', labelsize='x-large')
 #ax.set_title('Relative network position influences value of local measurements in teammate state inference')
 plt.tight_layout()
 # save
-plt.savefig("C:/teamwork_without_talking/results/teammate_inference_relative_position.png",dpi=450)
-plt.savefig("C:/teamwork_without_talking/results/teammate_inference_relative_position.svg",dpi=450)
+plt.savefig(str("C:/teamwork_without_talking/results/teammate_inference_relative_position_" + year + ".png"),dpi=450)
+plt.savefig(str("C:/teamwork_without_talking/results/teammate_inference_relative_position_" + year + ".svg"),dpi=450)
 
 plt.show()
