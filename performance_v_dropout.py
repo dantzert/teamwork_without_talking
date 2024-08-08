@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import datetime
 
 
-year = '2020' # '2020' or '2021'
+year = '2021' # '2020' or '2021'
 control_scenarios = ['hi-fi','lo-fi','local']
 #control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
@@ -17,7 +17,8 @@ for control_scenario in control_scenarios:
         # read in the corresponding cost file
         df = pd.read_csv("C:/teamwork_without_talking/results/"+str(control_scenario) + "_" + str(packet_loss) + "_summer_"+str(year) +"_costs.csv")
         scores.at[control_scenario, packet_loss] = df[' total cost'][0]
-        
+        # try a higher penalty on TSS
+        #scores.at[control_scenario, packet_loss] = df['flood cost'][0] + df[' flow cost'][0] + 1000000*df[' TSS loading (kg)'][0]
     
 print(scores)
 
@@ -36,6 +37,9 @@ for i in range(len(expected_report_frequency)):
 
 # load in the cost for the centralized scenario
 centralized_cost = pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))[' total cost'][0]
+# try a higher penalty on TSS
+#centralized_cost = pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))['flood cost'][0] + pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))[' flow cost'][0]  + 1000000*pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))[' TSS loading (kg)'][0]
+print(centralized_cost)
 
 # plot the scores with cost as the y axis and expected report frequency as the x axis
 l_width = 7
