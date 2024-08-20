@@ -18,9 +18,9 @@ np.set_printoptions(precision=3,suppress=True)
 # set the random seed for replicability
 np.random.seed(0)
 
-# options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'local' 
-year = '2021' # '2020' or '2021'
+# options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
+control_scenario = 'uncontrolled' 
+year = '2020' # '2020' or '2021'
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -180,7 +180,7 @@ g = 32.2 # ft / s^2
 # H_e is the effective head in meters, which is just the depth in the basin as the orifices are "bottom"
 # to get the action command as a percent open, we solve as: open_pct = Q_desired / (Cd * Ao * sqrt(2*g*H_e))
 
-if control_scenario == 'centralized':
+if control_scenario == 'centralized' or 'uncontrolled':
     packet_loss_chances = [0.0]
 else:
     packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
@@ -240,6 +240,12 @@ for packet_loss_chance in packet_loss_chances:
                 
 
     while not done:
+        if control_scenario == 'uncontrolled':
+            # make u_open_pct all ones (fully open) for the uncontrolled scenario
+            u_open_pct = np.ones((len(env.config['action_space']),1))
+            total_TSS_loading = pyswmm.Links(env.env.sim)["O1"].total_loading['TSS']
+            done = env.step(u_open_pct.flatten())
+            continue
 
         # take control actions?
         if env.env.sim.current_time.minute % 5 == 0 and (env.env.sim.current_time > last_eval + datetime.timedelta(minutes=2)):

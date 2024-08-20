@@ -10,7 +10,7 @@ from seaborn._core.properties import LineStyle
 
 
 year = '2021' # or '2021'
-duration = 'storm' # 'full' or 'storm'
+duration = 'full' # 'full' or 'storm'
 dropout_rate = '0.9993_' # many options for this one, see tune_control.py
 # include the _ after to make sure you don't include file names for which this is a substring (e.g., 0.99 also grabs 0.999 and 0.9999)
 control_scenarios = ['centralized','hi-fi','lo-fi','local']
@@ -102,25 +102,29 @@ for control_scenario in control_scenarios:
         data = centralized_data
         color = 'black'
         line_style = 'solid'
+        label = 'centralized'
     elif control_scenario == 'hi-fi':
         data = hi_fi_data
         color = 'blue'
         line_style = 'dashed'
+        label = 'high fidelity'
     elif control_scenario == 'lo-fi':
         #continue # only do hi-fi and centralized for the conference abstract (simplify things)
         data = lo_fi_data
         color = 'red'
         line_style = 'dotted'
+        label = 'low fidelity'
     elif control_scenario == 'local':
         #continue
         data = local_data
         color = 'green'
         line_style = 'dashdot'
+        label = 'local'
     else:
         print('Control scenario not recognized')
 
     # plot 10 depth
-    axs[0,0].plot(data['simulation_time'],np.array(data['depthN']['10']) / ft2meters, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[0,0].plot(data['simulation_time'],np.array(data['depthN']['10']) / ft2meters, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[0,0].hlines(basin_max_depths[5] / ft2meters, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle='dotted',linewidth = line_width,alpha=0.6)
     axs[0,0].annotate("10 depth",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[0,0].set_xticks([])
@@ -130,7 +134,7 @@ for control_scenario in control_scenarios:
     # draw an arrow thorugh the x axis pointing downward
     #axs[0,0].annotate('', xy=(0.5, -0.1), xycoords='axes fraction', xytext=(0.5, 0.1), textcoords='axes fraction', arrowprops=dict(facecolor='gray',headwidth=10,headlength=10))
     # plot 10 flow
-    axs[1,0].plot(data['simulation_time'],np.array(data['flow']['O10']) * cfs2lps, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[1,0].plot(data['simulation_time'],np.array(data['flow']['O10']) * cfs2lps, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[1,0].hlines(flow_threshold_value * cfs2lps, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle ='dotted',linewidth = line_width,alpha=0.6)
     axs[1,0].annotate("10 flow",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[1,0].set_xticks([])
@@ -139,7 +143,7 @@ for control_scenario in control_scenarios:
     #axs[1,0].set_ylabel('Flow (lps)')
     #axs[1,0].annotate('', xy=(0.5, -0.1), xycoords='axes fraction', xytext=(0.5, 0.1), textcoords='axes fraction', arrowprops=dict(facecolor='gray',headwidth=10,headlength=10))
     # plot 7 depth
-    axs[0,1].plot(data['simulation_time'],np.array(data['depthN']['7']) / ft2meters, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[0,1].plot(data['simulation_time'],np.array(data['depthN']['7']) / ft2meters, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[0,1].hlines(basin_max_depths[3] / ft2meters, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle='dotted',linewidth = line_width,alpha=0.6)
     axs[0,1].annotate("7 depth",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[0,1].set_xticks([])
@@ -147,7 +151,7 @@ for control_scenario in control_scenarios:
     #axs[0,1].set_yticks([])
     #axs[0,1].annotate('', xy=(0.5, -0.1), xycoords='axes fraction', xytext=(0.5, 0.1), textcoords='axes fraction', arrowprops=dict(facecolor='gray',headwidth=10,headlength=10))
     # plot 7 flow
-    axs[1,1].plot(data['simulation_time'],np.array(data['flow']['O7']) * cfs2lps, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[1,1].plot(data['simulation_time'],np.array(data['flow']['O7']) * cfs2lps, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[1,1].hlines(flow_threshold_value * cfs2lps, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle ='dotted',linewidth = line_width,alpha=0.6)
     axs[1,1].annotate("7 flow",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[1,1].set_xticks([])
@@ -155,7 +159,7 @@ for control_scenario in control_scenarios:
     #axs[1,1].set_yticks([])
     #axs[1,1].annotate('', xy=(1.25, -0.25), xycoords='axes fraction', xytext=(1.05, -0.05), textcoords='axes fraction', arrowprops=dict(facecolor='black', shrink=0.05))
     # plot 8 depth
-    axs[0,2].plot(data['simulation_time'],np.array(data['depthN']['8']) / ft2meters, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[0,2].plot(data['simulation_time'],np.array(data['depthN']['8']) / ft2meters, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[0,2].hlines(basin_max_depths[4] / ft2meters, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle='dotted',linewidth = line_width,alpha=0.6)
     axs[0,2].annotate("8 depth",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[0,2].set_xticks([])
@@ -163,7 +167,7 @@ for control_scenario in control_scenarios:
     #axs[0,2].set_yticks([])
     #axs[0,2].annotate('', xy=(0.5, -0.1), xycoords='axes fraction', xytext=(0.5, 0.1), textcoords='axes fraction', arrowprops=dict(facecolor='gray',headwidth=10,headlength=10))
     # plot 8 flow
-    axs[1,2].plot(data['simulation_time'],np.array(data['flow']['O8']) * cfs2lps, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[1,2].plot(data['simulation_time'],np.array(data['flow']['O8']) * cfs2lps, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[1,2].hlines(flow_threshold_value * cfs2lps, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle ='dotted',linewidth = line_width,alpha=0.6)
     axs[1,2].annotate("8 flow",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[1,2].set_xticks([])
@@ -171,7 +175,7 @@ for control_scenario in control_scenarios:
     #axs[1,2].set_yticks([])
     #axs[1,2].annotate('', xy=(0.5, -0.1), xycoords='axes fraction', xytext=(0.5, 0.1), textcoords='axes fraction', arrowprops=dict(facecolor='gray',headwidth=10,headlength=10))
     # plot 6 depth
-    axs[2,2].plot(data['simulation_time'],np.array(data['depthN']['6']) / ft2meters, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[2,2].plot(data['simulation_time'],np.array(data['depthN']['6']) / ft2meters, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[2,2].hlines(basin_max_depths[2] / ft2meters, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle='dotted',linewidth = line_width,alpha=0.6)
     axs[2,2].annotate("6 depth",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[2,2].set_xticks([])
@@ -179,14 +183,14 @@ for control_scenario in control_scenarios:
     #axs[2,2].set_yticks([])
     #axs[2,2].annotate('', xy=(-0.3, 0.5), xycoords='axes fraction', xytext=(-0.05, 0.5), textcoords='axes fraction', arrowprops=dict(facecolor='black', shrink=0.05))
     # plot 6 flow
-    axs[2,1].plot(data['simulation_time'],np.array(data['flow']['O6']) * cfs2lps, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[2,1].plot(data['simulation_time'],np.array(data['flow']['O6']) * cfs2lps, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[2,1].hlines(flow_threshold_value * cfs2lps, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle ='dotted',linewidth = line_width,alpha=0.6)
     axs[2,1].annotate("6 flow",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[2,1].set_xticks([])
     #axs[2,1].set_yticks([])
     #axs[2,1].annotate('', xy=(-0.3, 0.5), xycoords='axes fraction', xytext=(-0.05, 0.5), textcoords='axes fraction', arrowprops=dict(facecolor='black', shrink=0.05))
     # plot 4 depth
-    axs[2,0].plot(data['simulation_time'],np.array(data['depthN']['4']) / ft2meters, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[2,0].plot(data['simulation_time'],np.array(data['depthN']['4']) / ft2meters, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[2,0].hlines(basin_max_depths[1] / ft2meters, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle='dotted',linewidth = line_width,alpha=0.6)
     axs[2,0].annotate("4 depth",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[2,0].set_xticks([])
@@ -195,7 +199,7 @@ for control_scenario in control_scenarios:
     #axs[2,0].set_yticks([])
     #axs[2,0].annotate('', xy=(0.5, -0.1), xycoords='axes fraction', xytext=(0.5, 0.1), textcoords='axes fraction', arrowprops=dict(facecolor='gray',headwidth=10,headlength=10))
     # plot 4 flow
-    axs[3,0].plot(data['simulation_time'],np.array(data['flow']['O4']) * cfs2lps, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[3,0].plot(data['simulation_time'],np.array(data['flow']['O4']) * cfs2lps, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[3,0].hlines(flow_threshold_value * cfs2lps, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle ='dotted',linewidth = line_width,alpha=0.6)
     axs[3,0].annotate("4 flow",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     axs[3,0].set_xlim(start_date, end_date)
@@ -205,7 +209,7 @@ for control_scenario in control_scenarios:
     #axs[3,0].set_ylabel('Flow (lps)')
     #axs[3,0].set_yticks([])
     # plot 1 depth
-    axs[3,1].plot(data['simulation_time'],np.array(data['depthN']['1']) / ft2meters, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[3,1].plot(data['simulation_time'],np.array(data['depthN']['1']) / ft2meters, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[3,1].hlines(basin_max_depths[0] / ft2meters, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle='dotted',linewidth = line_width,alpha=0.6)
     axs[3,1].annotate("1 depth",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     #axs[3,1].set_yticks([])
@@ -213,7 +217,7 @@ for control_scenario in control_scenarios:
     axs[3,1].set_xticks([start_date, start_date + (end_date - start_date)/2, end_date])
     #axs[3,1].annotate('', xy=(1.3, 0.5), xycoords='axes fraction', xytext=(1.05, 0.5), textcoords='axes fraction', arrowprops=dict(facecolor='black', shrink=0.05))
     # plot 1 flow
-    axs[3,2].plot(data['simulation_time'],np.array(data['flow']['O1']) * cfs2lps, label=control_scenario,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
+    axs[3,2].plot(data['simulation_time'],np.array(data['flow']['O1']) * cfs2lps, label=label,color = color,linestyle = line_style,linewidth = line_width,alpha=0.6)
     axs[3,2].hlines(flow_threshold_value * cfs2lps, data['simulation_time'][0], data['simulation_time'][-1], label='threshold',color='purple', linestyle ='dotted',linewidth = line_width,alpha=0.6)
     axs[3,2].annotate("1 flow",xy=(0.1,0.75),xycoords = 'axes fraction', fontsize = 'xx-large')
     #axs[3,2].set_yticks([])
