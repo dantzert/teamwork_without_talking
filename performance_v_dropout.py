@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import datetime
 
 
-year = '2020' # '2020' or '2021'
-control_scenarios = ['hi-fi','lo-fi','local']
-#control_scenarios = ['hi-fi']
+year = '2021' # '2020' or '2021'
+#control_scenarios = ['hi-fi','lo-fi','local']
+control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
@@ -46,9 +46,17 @@ print(uncontrolled_cost)
 # plot the scores with cost as the y axis and expected report frequency as the x axis
 l_width = 7
 fig, ax = plt.subplots(figsize=(10,7.5)) # 12x9 for paper figure, smaller for abstract (relatively bigger text)
-ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='high fidelity', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
-ax.plot(expected_report_frequency, 1 - scores.loc['lo-fi']/uncontrolled_cost, label='low fidelity', linestyle='dotted',color='red', marker='o', linewidth=l_width, markersize = 3*l_width)
-ax.plot(expected_report_frequency, 1 - scores.loc['local']/uncontrolled_cost, label='local', linestyle='dashdot', color='green',marker='o', linewidth=l_width, markersize = 3*l_width)
+#ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='high fidelity', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
+ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='new method', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
+
+try:
+    ax.plot(expected_report_frequency, 1 - scores.loc['lo-fi']/uncontrolled_cost, label='low fidelity', linestyle='dotted',color='red', marker='o', linewidth=l_width, markersize = 3*l_width)
+except:
+    pass
+try:
+    ax.plot(expected_report_frequency, 1 - scores.loc['local']/uncontrolled_cost, label='local', linestyle='dashdot', color='green',marker='o', linewidth=l_width, markersize = 3*l_width)
+except:
+    pass
 ax.axhline(y=1 - centralized_cost/uncontrolled_cost, linestyle='solid', label='centralized',color='black', linewidth=l_width)
 #ax.axhline(y=uncontrolled_cost, linestyle='dashed', label='uncontrolled',color='black', linewidth=l_width)
 ax.set_xlabel('Expected Report Frequency',fontsize='xx-large')
@@ -68,6 +76,9 @@ plt.ylim(bottom=0)
 ax.axvline(x=9, linestyle='dotted', color='black', linewidth=l_width)
 plt.tight_layout()
 # save the plot
+if len(control_scenarios) < 2:
+    plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+"_abstract_version.png",dpi=450)
+    plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+"_abstract_version.svg",dpi=450)
 plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+".png",dpi=450)
 plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+".svg",dpi=450)
 plt.show()

@@ -9,7 +9,7 @@ import os
 from seaborn._core.properties import LineStyle
 
 
-year = '2021' # or '2021'
+year = '2020' # or '2021'
 duration = 'storm' # 'full' or 'storm'
 dropout_rate = '0.9993_' # many options for this one, see tune_control.py
 # include the _ after to make sure you don't include file names for which this is a substring (e.g., 0.99 also grabs 0.999 and 0.9999)
@@ -63,21 +63,48 @@ line_width = 3
 #fig.add_artist(matplotlib.lines.Line2D([0.5, 0.5,0.785], [0.9,0.6,0.42], transform=fig.transFigure, color='black', linestyle='solid', linewidth=10,alpha=0.08))
 skeleton_linewidth = 15
 skeleton_alpha = 0.25
-fig.add_artist(matplotlib.lines.Line2D([0.18, 0.18], [0.76,0.74], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
-fig.add_artist(matplotlib.lines.Line2D([0.18, 0.18], [0.52,0.50], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
-fig.add_artist(matplotlib.lines.Line2D([0.18, 0.18], [0.28,0.26], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+#fig.add_artist(matplotlib.lines.Line2D([0.18, 0.18], [0.76,0.74], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+#fig.add_artist(matplotlib.lines.Line2D([0.18, 0.18], [0.52,0.50], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+#fig.add_artist(matplotlib.lines.Line2D([0.18, 0.18], [0.28,0.26], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+# add arrowheads to these lines, the first one should be pointing down. don't use fancy arrow
+fig.add_artist(matplotlib.patches.Arrow(0.18, 0.77, 0, -0.03, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+fig.add_artist(matplotlib.patches.Arrow(0.18, 0.53, 0, -0.03, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+fig.add_artist(matplotlib.patches.Arrow(0.18, 0.29, 0, -0.03, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
 
-fig.add_artist(matplotlib.lines.Line2D([0.48, 0.48], [0.76,0.74], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
-fig.add_artist(matplotlib.lines.Line2D([0.64, 0.66], [0.52,0.50], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
 
-fig.add_artist(matplotlib.lines.Line2D([0.84, 0.84], [0.76,0.74], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
-fig.add_artist(matplotlib.lines.Line2D([0.84, 0.84], [0.52,0.50], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
 
-fig.add_artist(matplotlib.lines.Line2D([0.64, 0.66], [0.40,0.40], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
-fig.add_artist(matplotlib.lines.Line2D([0.31, 0.33], [0.40,0.40], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+# 7 depth and flow
+#fig.add_artist(matplotlib.lines.Line2D([0.48, 0.48], [0.76,0.74], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+#fig.add_artist(matplotlib.lines.Line2D([0.64, 0.66], [0.52,0.50], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.48, 0.77, 0, -0.03, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+fig.add_artist(matplotlib.patches.Arrow(0.64, 0.53, 0.03, -0.02, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
 
-fig.add_artist(matplotlib.lines.Line2D([0.64, 0.66], [0.15,0.15], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
-fig.add_artist(matplotlib.lines.Line2D([0.31, 0.33], [0.15,0.15], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+# 8 depth and flow
+#fig.add_artist(matplotlib.lines.Line2D([0.84, 0.84], [0.76,0.74], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.84, 0.77, 0, -0.03, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+
+#fig.add_artist(matplotlib.lines.Line2D([0.84, 0.84], [0.52,0.50], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.84, 0.53, 0, -0.03, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+
+
+
+# 6 depth and flow
+#fig.add_artist(matplotlib.lines.Line2D([0.64, 0.66], [0.40,0.40], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.67, 0.40, -0.03, 0, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+
+#fig.add_artist(matplotlib.lines.Line2D([0.31, 0.33], [0.40,0.40], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.34, 0.40, -0.03, 0, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+
+
+# 1 depth and flow
+#fig.add_artist(matplotlib.lines.Line2D([0.64, 0.66], [0.15,0.15], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.63, 0.15, 0.03, 0, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+fig.add_artist(matplotlib.patches.Arrow(0.96, 0.15, 0.03, 0, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+
+
+#fig.add_artist(matplotlib.lines.Line2D([0.31, 0.33], [0.15,0.15], transform=fig.transFigure, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha))
+fig.add_artist(matplotlib.patches.Arrow(0.30, 0.15, 0.03, 0, transform=fig.transFigure, color='grey', linestyle='solid', width = 0.02))
+
 
 
 if year == '2020':
