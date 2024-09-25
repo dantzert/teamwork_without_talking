@@ -7,8 +7,8 @@ import datetime
 
 
 year = '2021' # '2020' or '2021'
-#control_scenarios = ['hi-fi','lo-fi','local']
-control_scenarios = ['hi-fi']
+control_scenarios = ['hi-fi','lo-fi','local']
+#control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
@@ -42,6 +42,9 @@ uncontrolled_cost = pd.read_csv(str("C:/teamwork_without_talking/results/uncontr
 #centralized_cost = pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))['flood cost'][0] + pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))[' flow cost'][0]  + 1000000*pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))[' TSS loading (kg)'][0]
 print(centralized_cost)
 print(uncontrolled_cost)
+# print in scientific notation
+print("{:.2e}".format(centralized_cost))
+print("{:.2e}".format(uncontrolled_cost))
 
 # plot the scores with cost as the y axis and expected report frequency as the x axis
 l_width = 7
