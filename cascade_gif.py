@@ -48,6 +48,9 @@ def init():
     ax.legend(fontsize='x-large')
     # just under the left end of the x-axis, add a text annotation that says "Now"
     ax.text(-0.03,-0.1,"Now",transform=ax.transAxes,fontsize='x-large')
+    # make the x-ticks go from 0 to 6
+    plt.xticks(np.arange(0,7,1),fontsize='x-large')
+
     return line1, line2
 
 # Update the plot for each frame
