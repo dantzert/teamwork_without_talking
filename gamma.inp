@@ -46,7 +46,7 @@ THREADS              1
 [EVAPORATION]
 ;;Data Source    Parameters
 ;;-------------- ----------------
-CONSTANT         0.0
+CONSTANT         0.15
 DRY_ONLY         NO
 
 [RAINGAGES]
