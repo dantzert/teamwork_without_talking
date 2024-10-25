@@ -19,8 +19,8 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
-control_scenario = 'uncontrolled' 
-year = '2020' # '2020' or '2021'
+control_scenario = 'hi-fi' 
+year = '2021' # '2020' or '2021'
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -180,10 +180,11 @@ g = 32.2 # ft / s^2
 # H_e is the effective head in meters, which is just the depth in the basin as the orifices are "bottom"
 # to get the action command as a percent open, we solve as: open_pct = Q_desired / (Cd * Ao * sqrt(2*g*H_e))
 
-if control_scenario == 'centralized' or 'uncontrolled':
+if control_scenario == 'centralized' or control_scenario == 'uncontrolled':
     packet_loss_chances = [0.0]
 else:
-    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
+    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999] # as submitted
+    packet_loss_chances = [1.0] # trying something
     #packet_loss_chances = [0.9993,0.9995, 0.9997,0.9999] # for dev
     #packet_loss_chances = [0.999] # for dev
     # at the low end no chance of packet loss, report every 5 minutes
@@ -193,7 +194,7 @@ for packet_loss_chance in packet_loss_chances:
     print("\nevaluating packet loss chance: ", packet_loss_chance)
 
     env = pystorms.scenarios.gamma()
-    env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp")
+    env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp") # 2.0.0 release raises a spurious multi-sim error. revert to 1.5.1
     # if you want a shorter timeframe than the entire summer so you can debug the controller
     #env.env.sim.start_time = datetime.datetime(2020,5,14,0,0)
     #env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 

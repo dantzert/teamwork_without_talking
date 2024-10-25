@@ -405,3 +405,4 @@ results\*.pkl
 *.pkl
 results/centralized_0.0_summer_2020.pkl
 results/centralized_0.0_summer_2020.pkl
+*.pkl
