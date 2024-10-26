@@ -9,9 +9,11 @@ import os
 from seaborn._core.properties import LineStyle
 
 
-year = '2020' # or '2021'
-duration = 'storm' # 'full' or 'storm'
+year = '2021' # or '2021'
+duration = 'full' # 'full' or 'storm'
 dropout_rate = '0.9993_' # many options for this one, see tune_control.py
+outage_length = "90_days_0_00_00" # XX_days_HH_MM_SS
+experiment = "synchronized" # "dropout" or "synchronized"
 # include the _ after to make sure you don't include file names for which this is a substring (e.g., 0.99 also grabs 0.999 and 0.9999)
 control_scenarios = ['centralized','hi-fi','lo-fi','local']
 #control_scenarios = ['centralized','hi-fi']
@@ -21,8 +23,12 @@ path = "C:/teamwork_without_talking/results/"
 # Load data
 files = []
 for file in os.listdir(path):
-    if year in file and dropout_rate in file and ".pkl" in file:
-        files.append(file)
+    if experiment == "dropout":
+        if year in file and dropout_rate in file and ".pkl" in file:
+            files.append(file)
+    elif experiment == "synchronized":
+        if year in file and outage_length in file and ".pkl" in file:
+            files.append(file)
         
 # for each file, load the data
 for file in files:
@@ -262,8 +268,13 @@ axs[2,1].legend(by_label.values(), by_label.keys(),fontsize='large', loc='upper 
 
 plt.tight_layout()
 # save the figure, including the dropout rate and 'full' or 'storm' in the file name
-plt.savefig("C:/teamwork_without_talking/results/compare_response_"+year+"_"+duration+"_"+dropout_rate+".png",dpi=450)
-plt.savefig("C:/teamwork_without_talking/results/compare_response_"+year+"_"+duration+"_"+dropout_rate+".svg",dpi=450)
+if experiment == "dropout":
+    plt.savefig("C:/teamwork_without_talking/results/compare_response_"+year+"_"+duration+"_"+dropout_rate+".png",dpi=450)
+    plt.savefig("C:/teamwork_without_talking/results/compare_response_"+year+"_"+duration+"_"+dropout_rate+".svg",dpi=450)
+elif experiment == "synchronized":
+    plt.savefig("C:/teamwork_without_talking/results/compare_response_"+year+"_"+duration+"_"+outage_length+".png",dpi=450)
+    plt.savefig("C:/teamwork_without_talking/results/compare_response_"+year+"_"+duration+"_"+outage_length+".svg",dpi=450)
+
 plt.show()
 
 

@@ -191,7 +191,7 @@ print(dependent_columns)
 independent_columns = env.config['action_space']
 
 
-plot_approx_validation = True
+plot_approx_validation = False
 
 if plot_approx_validation:
     ## validation - forward simulate over subset of training data
@@ -302,15 +302,15 @@ if plot_approx_validation:
 # reindex the response to integer timestep
 response.index = np.arange(0,len(response),1)
 
-max_iter = 250 # 250
-max_transition_state_dim = 25 # 25
+max_iter = 0 # 250
+max_transition_state_dim = 5 # 25
 
 
 # learn the dynamics
 lti_plant_approx = modpods.lti_system_gen(connectivity,response,independent_columns = env.config['action_space'],
                                           dependent_columns = dependent_columns, max_iter = max_iter,
-                                          swmm=True,bibo_stable=True,max_transition_state_dim=max_transition_state_dim)
-
+                                          swmm=True,bibo_stable=False,max_transition_state_dim=max_transition_state_dim)
+# bibo stable true for high fidelity, false for low fidelity (less constraints)
 
 if max_iter < 5:
     # pickle the plant approximation to load later

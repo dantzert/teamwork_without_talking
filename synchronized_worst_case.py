@@ -18,8 +18,9 @@ np.set_printoptions(precision=3,suppress=True)
 # set the random seed for replicability
 np.random.seed(0)
 
+# centralized and uncontrolled never need to be run in this script as they'll be the exact same as in "tune_control.py"
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
-control_scenario = 'hi-fi' 
+control_scenario = 'lo-fi' 
 year = '2021' # '2020' or '2021'
 verbose = True
 
@@ -192,7 +193,7 @@ else:
                       datetime.timedelta(days=2),datetime.timedelta(days=3),datetime.timedelta(days=7),
                       datetime.timedelta(days=14),datetime.timedelta(days=30),datetime.timedelta(days=60),
                       datetime.timedelta(days=90),datetime.timedelta(days=120)]
-    outage_lengths = outage_lengths[-3:] # just for testing
+    #outage_lengths = outage_lengths[-2:] # just for testing
 
 
 for outage_length in outage_lengths:
@@ -201,7 +202,7 @@ for outage_length in outage_lengths:
     env = pystorms.scenarios.gamma()
     env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp") # 2.0.0 release raises a spurious multi-sim error. revert to 1.5.1
     # if you want a shorter timeframe than the entire summer so you can debug the controller
-    env.env.sim.start_time = datetime.datetime(2021,6,10,0,0)
+    #env.env.sim.start_time = datetime.datetime(2021,6,10,0,0)
     #env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 
     #env.env.sim.end_time = datetime.datetime(2020,6,15,0,0) 
     env.env.sim.start()
@@ -611,7 +612,11 @@ for outage_length in outage_lengths:
     print("TSS loading (kg): {:.4e}".format(total_TSS_loading/2.2))
     print("total cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
     # save the costs to a csv
-    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
+    # format the outage_length so it can go in a filename
+    outage_length_string = str(outage_length).replace(':','_')
+    outage_length_string = outage_length_string.replace(' ','_')
+    outage_length_string = outage_length_string.replace(',','')
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length_string) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
         f.write("flood cost, flow cost, TSS loading (kg), total cost\n")
         f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost,flow_cost,total_TSS_loading/2.2,flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
 
@@ -653,13 +658,13 @@ for outage_length in outage_lengths:
             axes[idx,1].set_xticks([])
 
     plt.tight_layout()
-    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length) + "_summer_"+str(year) + ".png"),dpi=450)
-    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length)  + "_summer_"+str(year) + ".svg"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length_string) + "_summer_"+str(year) + ".png"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length_string)  + "_summer_"+str(year) + ".svg"),dpi=450)
     #plt.show(block=True)
     #plt.close('all')
 
     # save the data log
-    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length)  + "_summer_"+str(year) + ".pkl"), 'wb') as f:
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length_string)  + "_summer_"+str(year) + ".pkl"), 'wb') as f:
         pickle.dump(env.data_log, f)
     # this is only the "truth" data log, the values which actually happened.
     # when you want to track teammate state inference errors, you'll need to save the system estimates as well

@@ -19,8 +19,8 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
-control_scenario = 'local' 
-year = '2020' # '2020' or '2021'
+control_scenario = 'lo-fi' 
+year = '2021' # '2020' or '2021'
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -184,8 +184,8 @@ if control_scenario == 'centralized' or control_scenario == 'uncontrolled':
     packet_loss_chances = [0.0]
 else:
     #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999] # as originally submitted
-    #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0] # with "never"
-    packet_loss_chances = [1.0] # trying something
+    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0] # with "never"
+    #packet_loss_chances = [1.0] # trying something
 
     # at the low end no chance of packet loss, report every 5 minutes
     # at the high end, expect to report every 35 days

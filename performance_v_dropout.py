@@ -7,9 +7,9 @@ import datetime
 
 
 year = '2021' # '2020' or '2021'
-control_scenarios = ['hi-fi','lo-fi','local']
-#control_scenarios = ['hi-fi']
-packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999]
+#control_scenarios = ['hi-fi','lo-fi','local']
+control_scenarios = ['hi-fi','lo-fi']
+packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
 for control_scenario in control_scenarios:
@@ -23,17 +23,20 @@ for control_scenario in control_scenarios:
 print(scores)
 
 # make a list called "expected_report_frequency" which is 5 minutes divided by (1-packet_loss_chance)
-expected_report_frequency = [5/(1-p) for p in packet_loss_chances]
+expected_report_frequency = [5/(1-p+10e-20) for p in packet_loss_chances]
 
 # go through expected_report_frequency and express the time elapsed in one time unit (minutes, hours, or days)
 # take the value to one decimal place. use "m" for minutes, "h" for hours, and "d" for days
-for i in range(len(expected_report_frequency)):
+for i in range(len(expected_report_frequency)-1):
     if expected_report_frequency[i] < 60:
         expected_report_frequency[i] = str(round(expected_report_frequency[i],1)) + " min"
     elif expected_report_frequency[i] < 1440:
         expected_report_frequency[i] = str(round(expected_report_frequency[i]/60,1)) + " hours"
     else:
         expected_report_frequency[i] = str(round(expected_report_frequency[i]/1440,1)) + " days"
+        
+# last value is "never"
+expected_report_frequency[-1] = "Never"
 
 # load in the cost for the centralized scenario
 centralized_cost = pd.read_csv(str("C:/teamwork_without_talking/results/centralized_0.0_summer_"+str(year)+"_costs.csv"))[' total cost'][0]
@@ -76,7 +79,7 @@ ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=1))
 # set ymin to 0
 plt.ylim(bottom=0)
 #add a vertical line at the 5.0 days label
-ax.axvline(x=9, linestyle='dotted', color='black', linewidth=l_width)
+ax.axvline(x=10, linestyle='dotted', color='black', linewidth=l_width)
 plt.tight_layout()
 # save the plot
 if len(control_scenarios) < 2:
