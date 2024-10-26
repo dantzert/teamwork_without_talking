@@ -19,8 +19,8 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
-control_scenario = 'local' 
-year = '2020' # '2020' or '2021'
+control_scenario = 'hi-fi' 
+year = '2021' # '2020' or '2021'
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -181,22 +181,27 @@ g = 32.2 # ft / s^2
 # to get the action command as a percent open, we solve as: open_pct = Q_desired / (Cd * Ao * sqrt(2*g*H_e))
 
 if control_scenario == 'centralized' or control_scenario == 'uncontrolled':
-    packet_loss_chances = [0.0]
+    outage_lengths = [0.0]
 else:
     #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999] # as originally submitted
     #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0] # with "never"
-    packet_loss_chances = [1.0] # trying something
+    # make outage_lengths an array of timedeltas ranging from 5 minutes to 4 months, all divisible by 5 minutes, log spaced
+    outage_lengths = [datetime.timedelta(minutes=5),datetime.timedelta(minutes=10),datetime.timedelta(minutes=15),
+                      datetime.timedelta(minutes=30),datetime.timedelta(hours=1),datetime.timedelta(hours=2),
+                      datetime.timedelta(hours=4),datetime.timedelta(hours=8),datetime.timedelta(days=1),
+                      datetime.timedelta(days=2),datetime.timedelta(days=3),datetime.timedelta(days=7),
+                      datetime.timedelta(days=14),datetime.timedelta(days=30),datetime.timedelta(days=60),
+                      datetime.timedelta(days=90),datetime.timedelta(days=120)]
+    outage_lengths = outage_lengths[-3:] # just for testing
 
-    # at the low end no chance of packet loss, report every 5 minutes
-    # at the high end, expect to report every 35 days
 
-for packet_loss_chance in packet_loss_chances:
-    print("\nevaluating packet loss chance: ", packet_loss_chance)
+for outage_length in outage_lengths:
+    print("\nevaluating outage length: ", outage_length)
 
     env = pystorms.scenarios.gamma()
     env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp") # 2.0.0 release raises a spurious multi-sim error. revert to 1.5.1
     # if you want a shorter timeframe than the entire summer so you can debug the controller
-    #env.env.sim.start_time = datetime.datetime(2020,5,14,0,0)
+    env.env.sim.start_time = datetime.datetime(2021,6,10,0,0)
     #env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 
     #env.env.sim.end_time = datetime.datetime(2020,6,15,0,0) 
     env.env.sim.start()
@@ -345,8 +350,11 @@ for packet_loss_chance in packet_loss_chances:
                 # define a dictionary whose keys are the states and raingages, their values will be booleans indicating whether they report this timestep
                 reported = {'1':True,'4':True,'6':True,'7':True, '8':True,'10':True}
                 for key in reported.keys():
-                    if np.random.rand() < packet_loss_chance:
+                    # if the date is in between june 17th, noon, and june 17th, noon + outage_length, set reported[key] to False
+                    if (env.env.sim.current_time >= datetime.datetime(2021,6,17,12,0) and env.env.sim.current_time <= datetime.datetime(2021,6,17,12,0) + outage_length):
                         reported[key] = False
+                    else:
+                        reported[key] = True
                         
                 # the beginning looks very similar to the centralized case as we do the server-side system estimate
                 # the only difference is that we'll be missing some depth measurements from the control points
@@ -470,8 +478,11 @@ for packet_loss_chance in packet_loss_chances:
                 # define a dictionary whose keys are the states and raingages, their values will be booleans indicating whether they report this timestep
                 reported = {'1':True,'4':True,'6':True,'7':True, '8':True,'10':True}
                 for key in reported.keys():
-                    if np.random.rand() < packet_loss_chance:
+                    # if the date is in between june 17th, noon, and june 17th, noon + outage_length, set reported[key] to False
+                    if (env.env.sim.current_time >= datetime.datetime(2021,6,17,12,0) and env.env.sim.current_time <= datetime.datetime(2021,6,17,12,0) + outage_length):
                         reported[key] = False
+                    else:
+                        reported[key] = True
                         
                 # the beginning looks very similar to the centralized case as we do the server-side system estimate
                 # the only difference is that we'll be missing some depth measurements from the control points
@@ -600,7 +611,7 @@ for packet_loss_chance in packet_loss_chances:
     print("TSS loading (kg): {:.4e}".format(total_TSS_loading/2.2))
     print("total cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
     # save the costs to a csv
-    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
         f.write("flood cost, flow cost, TSS loading (kg), total cost\n")
         f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost,flow_cost,total_TSS_loading/2.2,flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
 
@@ -642,13 +653,13 @@ for packet_loss_chance in packet_loss_chances:
             axes[idx,1].set_xticks([])
 
     plt.tight_layout()
-    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".png"),dpi=450)
-    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".svg"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length) + "_summer_"+str(year) + ".png"),dpi=450)
+    plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length)  + "_summer_"+str(year) + ".svg"),dpi=450)
     #plt.show(block=True)
     #plt.close('all')
 
     # save the data log
-    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".pkl"), 'wb') as f:
+    with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length)  + "_summer_"+str(year) + ".pkl"), 'wb') as f:
         pickle.dump(env.data_log, f)
     # this is only the "truth" data log, the values which actually happened.
     # when you want to track teammate state inference errors, you'll need to save the system estimates as well

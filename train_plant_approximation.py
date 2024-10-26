@@ -12,6 +12,10 @@ import swmm
 import datetime
 import control.matlab as matlab
 
+# to get rid of pysindy clarabel warning. comment this out if something isn't working as expected
+import warnings
+warnings.filterwarnings(action='ignore')
+
 # set the numpy random seed
 np.random.seed(42)
 
@@ -68,7 +72,7 @@ ft2meters = 3.281
 
 basin_max_depths =  [10.0, 10.0, 20.0, 10.0, 10.0, 13.72] # feet
 flow_threshold = np.ones(6)*3.9 # cfs
-'''
+
 plots_high = max(len(env.config['action_space']) , len(env.config['states']))
 fig, axes = plt.subplots(plots_high, 2, figsize=(10,1*plots_high))
 
@@ -101,7 +105,7 @@ plt.savefig("C:/teamwork_without_talking/characterization_experiment.png",dpi=45
 plt.savefig("C:/teamwork_without_talking/characterization_experiment.svg",dpi=450)
 #plt.show()
 plt.close('all')
-'''
+
 
 flows = pd.DataFrame.from_dict(env.data_log['flow']).iloc[:,[0,3,5,6,7,9]] # select only the [0,3,5,6,7,9] entries for the flows 
 depthN = pd.DataFrame.from_dict(env.data_log['depthN']).iloc[:,[0,3,5,6,7,9]]
@@ -187,106 +191,108 @@ print(dependent_columns)
 independent_columns = env.config['action_space']
 
 
-'''
-## validation - forward simulate over subset of training data
+plot_approx_validation = True
 
-# simulate the first couple days by specifying the rainfall forecast as initial conditions
-# and compare this to the swmm model output
+if plot_approx_validation:
+    ## validation - forward simulate over subset of training data
 
-# only use the first 5 days
-response_for_sim = response.iloc[:5*24*12]
-# reindex the response to an integer step
-response_for_sim.index = np.arange(0,len(response_for_sim),1)
+    # simulate the first couple days by specifying the rainfall forecast as initial conditions
+    # and compare this to the swmm model output
 
-# load the discrete time model we've already trained
-with open("C:/teamwork_without_talking/plant_approx_discrete_w_predictions.pickle", 'rb') as handle:
-    lti_plant_approx_discrete_w_predictions = pickle.load(handle)
+    # only use the first 5 days
+    response_for_sim = response.iloc[:5*24*12]
+    # reindex the response to an integer step
+    response_for_sim.index = np.arange(0,len(response_for_sim),1)
 
-# construct the initial condition X0
-# first, start with a dataframe of zeros with the same index as the state space
-X0 = pd.DataFrame(columns=lti_plant_approx_discrete_w_predictions.state_labels,index=[0])
-# now set the initial conditions for the depths to the first row of the training response
-for idx in range(len(env.config['states'])):
-    X0[str(dependent_columns[idx])] = response[dependent_columns[idx]].iloc[0]
+    # load the discrete time model we've already trained
+    with open("C:/teamwork_without_talking/plant_approx_discrete_w_predictions.pickle", 'rb') as handle:
+        lti_plant_approx_discrete_w_predictions = pickle.load(handle)
 
-# now initialize the raingage states
-# the initial state of 'raingage_X' will be the first entry in response
-# the initial state of 'raingage_X_00H05M' will be the second entry in response
-# the initial state of 'raingage_X_00H10M' will be the third entry in response
-# and so on up to 'raingage_X_48H00M' which will be the 72th entry in response
-# so, the initial conditions for the raingage states are the first 72 entries of response
-#raingage_J_shift_names = ['raingage_J_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
-raingage_J_shift_names = ['raingage_J_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
-# get rid of 0H0M and add 48H0M
-raingage_J_shift_names = raingage_J_shift_names[1:]
-#raingage_J_shift_names.append('raingage_J_48H00M')
-raingage_J_shift_names.append('raingage_J_06H00M')
-# do the same for raingage_C, N and S
-#raingage_C_shift_names = ['raingage_C_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
-raingage_C_shift_names = ['raingage_C_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
-raingage_C_shift_names = raingage_C_shift_names[1:]
-#raingage_C_shift_names.append('raingage_C_48H00M')
-raingage_C_shift_names.append('raingage_C_06H00M')
-#raingage_N_shift_names = ['raingage_N_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
-raingage_N_shift_names = ['raingage_N_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
-raingage_N_shift_names = raingage_N_shift_names[1:]
-#raingage_N_shift_names.append('raingage_N_48H00M')
-raingage_N_shift_names.append('raingage_N_06H00M')
-#raingage_S_shift_names = ['raingage_S_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
-raingage_S_shift_names = ['raingage_S_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
-raingage_S_shift_names = raingage_S_shift_names[1:]
-#raingage_S_shift_names.append('raingage_S_48H00M')
-raingage_S_shift_names.append('raingage_S_06H00M')
-# set the entries in X0 corresponding to raingage_J_shift names to 72 entries in response['raingage_J'] starting at the second timestep (index 1) and ending at the 73th timestep (index 72)
-print(X0.loc[0,raingage_J_shift_names])
-print(len(X0.loc[0,raingage_J_shift_names]))
-print(response_for_sim['raingage_J'].iloc[1:73]) 
+    # construct the initial condition X0
+    # first, start with a dataframe of zeros with the same index as the state space
+    X0 = pd.DataFrame(columns=lti_plant_approx_discrete_w_predictions.state_labels,index=[0])
+    # now set the initial conditions for the depths to the first row of the training response
+    for idx in range(len(env.config['states'])):
+        X0[str(dependent_columns[idx])] = response[dependent_columns[idx]].iloc[0]
 
-X0.loc[0,raingage_J_shift_names] = np.array(response_for_sim['raingage_J'].iloc[1:73])
+    # now initialize the raingage states
+    # the initial state of 'raingage_X' will be the first entry in response
+    # the initial state of 'raingage_X_00H05M' will be the second entry in response
+    # the initial state of 'raingage_X_00H10M' will be the third entry in response
+    # and so on up to 'raingage_X_48H00M' which will be the 72th entry in response
+    # so, the initial conditions for the raingage states are the first 72 entries of response
+    #raingage_J_shift_names = ['raingage_J_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
+    raingage_J_shift_names = ['raingage_J_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
+    # get rid of 0H0M and add 48H0M
+    raingage_J_shift_names = raingage_J_shift_names[1:]
+    #raingage_J_shift_names.append('raingage_J_48H00M')
+    raingage_J_shift_names.append('raingage_J_06H00M')
+    # do the same for raingage_C, N and S
+    #raingage_C_shift_names = ['raingage_C_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
+    raingage_C_shift_names = ['raingage_C_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
+    raingage_C_shift_names = raingage_C_shift_names[1:]
+    #raingage_C_shift_names.append('raingage_C_48H00M')
+    raingage_C_shift_names.append('raingage_C_06H00M')
+    #raingage_N_shift_names = ['raingage_N_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
+    raingage_N_shift_names = ['raingage_N_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
+    raingage_N_shift_names = raingage_N_shift_names[1:]
+    #raingage_N_shift_names.append('raingage_N_48H00M')
+    raingage_N_shift_names.append('raingage_N_06H00M')
+    #raingage_S_shift_names = ['raingage_S_' + str(i) + 'H' + str(j) + 'M' for i in range(48) for j in range(0,60,5)]
+    raingage_S_shift_names = ['raingage_S_' + str(i) + 'H' + str(j) + 'M' for i in range(6) for j in range(0,60,5)]
+    raingage_S_shift_names = raingage_S_shift_names[1:]
+    #raingage_S_shift_names.append('raingage_S_48H00M')
+    raingage_S_shift_names.append('raingage_S_06H00M')
+    # set the entries in X0 corresponding to raingage_J_shift names to 72 entries in response['raingage_J'] starting at the second timestep (index 1) and ending at the 73th timestep (index 72)
+    print(X0.loc[0,raingage_J_shift_names])
+    print(len(X0.loc[0,raingage_J_shift_names]))
+    print(response_for_sim['raingage_J'].iloc[1:73]) 
 
-print(max(X0.loc[0,raingage_J_shift_names]))
-print(max(response_for_sim['raingage_J'].iloc[1:73]))
+    X0.loc[0,raingage_J_shift_names] = np.array(response_for_sim['raingage_J'].iloc[1:73])
 
-X0.loc[0,raingage_C_shift_names] = np.array(response_for_sim['raingage_C'].iloc[1:73])
-X0.loc[0,raingage_N_shift_names] = np.array(response_for_sim['raingage_N'].iloc[1:73])
-X0.loc[0,raingage_S_shift_names] = np.array(response_for_sim['raingage_S'].iloc[1:73])
+    print(max(X0.loc[0,raingage_J_shift_names]))
+    print(max(response_for_sim['raingage_J'].iloc[1:73]))
 
-# fill any na's with zero
-X0.fillna(0.0,inplace=True)   
-# convert X0 to a numpy array
-X0 = X0.to_numpy().flatten()
+    X0.loc[0,raingage_C_shift_names] = np.array(response_for_sim['raingage_C'].iloc[1:73])
+    X0.loc[0,raingage_N_shift_names] = np.array(response_for_sim['raingage_N'].iloc[1:73])
+    X0.loc[0,raingage_S_shift_names] = np.array(response_for_sim['raingage_S'].iloc[1:73])
 
-approx_response = ct.forced_response(lti_plant_approx_discrete_w_predictions, T = response_for_sim.index.values, 
-                                     U = np.transpose(response_for_sim[independent_columns].values), X0 = X0)
+    # fill any na's with zero
+    X0.fillna(0.0,inplace=True)   
+    # convert X0 to a numpy array
+    X0 = X0.to_numpy().flatten()
+
+    approx_response = ct.forced_response(lti_plant_approx_discrete_w_predictions, T = response_for_sim.index.values, 
+                                         U = np.transpose(response_for_sim[independent_columns].values), X0 = X0)
 
 
-approx_data = pd.DataFrame(index=response_for_sim.index.values)
-for idx in range(len(dependent_columns)):
-    approx_data[dependent_columns[idx]] = approx_response.outputs[idx][:]
+    approx_data = pd.DataFrame(index=response_for_sim.index.values)
+    for idx in range(len(dependent_columns)):
+        approx_data[dependent_columns[idx]] = approx_response.outputs[idx][:]
 
-# print the max of each column in approx_data
-print(approx_data.max())
+    # print the max of each column in approx_data
+    print(approx_data.max())
 
-fig, axes = plt.subplots(len(dependent_columns), 1, figsize=(10, 10))
+    fig, axes = plt.subplots(len(dependent_columns), 1, figsize=(10, 10))
 
-for idx in range(len(dependent_columns)):
-    axes[idx].plot(response_for_sim[dependent_columns[idx]],label='actual')
-    axes[idx].plot(approx_data[dependent_columns[idx]],label='approx')
-    if idx == 0:
-        axes[idx].legend(fontsize='x-large',loc='best')
-    axes[idx].set_ylabel(dependent_columns[idx],fontsize='small')
-    if idx == len(dependent_columns)-1:
-        axes[idx].set_xlabel("time",fontsize='x-large')
-axes[0].set_title("outputs",fontsize='xx-large')
-plt.tight_layout()
-plt.savefig("C:/teamwork_without_talking/plant_approx.png")
-plt.savefig("C:/teamwork_without_talking/plant_approx.svg")
+    for idx in range(len(dependent_columns)):
+        axes[idx].plot(response_for_sim[dependent_columns[idx]],label='actual')
+        axes[idx].plot(approx_data[dependent_columns[idx]],label='approx')
+        if idx == 0:
+            axes[idx].legend(fontsize='x-large',loc='best')
+        axes[idx].set_ylabel(dependent_columns[idx],fontsize='small')
+        if idx == len(dependent_columns)-1:
+            axes[idx].set_xlabel("time",fontsize='x-large')
+    axes[0].set_title("outputs",fontsize='xx-large')
+    plt.tight_layout()
+    plt.savefig("C:/teamwork_without_talking/plant_approx.png")
+    plt.savefig("C:/teamwork_without_talking/plant_approx.svg")
 
-plt.show()
-#plt.close()
+    plt.show()
+    #plt.close()
 
-# end validation
-'''
+    # end validation
+
 
 
 
@@ -296,14 +302,14 @@ plt.show()
 # reindex the response to integer timestep
 response.index = np.arange(0,len(response),1)
 
-max_iter = 0#250
-max_transition_state_dim = 3#25
+max_iter = 250 # 250
+max_transition_state_dim = 25 # 25
 
 
 # learn the dynamics
 lti_plant_approx = modpods.lti_system_gen(connectivity,response,independent_columns = env.config['action_space'],
                                           dependent_columns = dependent_columns, max_iter = max_iter,
-                                          swmm=True,bibo_stable=False,max_transition_state_dim=max_transition_state_dim)
+                                          swmm=True,bibo_stable=True,max_transition_state_dim=max_transition_state_dim)
 
 
 if max_iter < 5:

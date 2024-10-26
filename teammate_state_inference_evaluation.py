@@ -9,15 +9,21 @@ import datetime
 ft2meters = 0.3048
 
 year = "2021" # or "2021"
+# options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
+control_scenario = 'hi-fi' 
+packet_loss_chance = 0.9993
 
 # for figure 5, just need to load in the timeseries of estiamtes of one node by several other nodes
 perspectives = ['truth','server','1','4','6','7','8','10']
 records = {}
 for perspective in perspectives: # was for 2020, now 2021
+    records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +"_teammate_inference_tracking_"+str(perspective)+".csv",index_col=0,parse_dates=True)
+    '''
     if year == "2020":
         records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.999_summer_2020_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
     else:
         records[perspective] = pd.read_csv("C:/teamwork_without_talking/results/hi-fi_0.9993_summer_2021_teammate_inference_tracking_" + str(perspective) + ".csv",index_col=0,parse_dates=True)
+    '''
     
 # plot the estimated state of node X from the perspective of: truth, a, b, and c
 fig, ax = plt.subplots(figsize=(12,9))
@@ -41,7 +47,7 @@ ax.legend(fontsize='xx-large',loc='upper left')
 # annotate the RMSE between 1,4, and 8 and the truth
 idx = 0
 for perspective in ['4','6','7']:
-    rmse = np.sqrt(np.mean((records[perspective]['8']-records['truth']['10'])**2))
+    rmse = np.sqrt(np.mean((records[perspective]['8']-records['truth']['8'])**2))
     ax.text(0.2,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + " m",transform=ax.transAxes,fontsize='xx-large')
     # add the NSE as well
     #nse = 1 - np.sum((records[perspective]['8']-records['truth']['10'])**2)/np.sum((records['truth']['10']-np.mean(records['truth']['10']))**2)
@@ -74,8 +80,8 @@ ax.xaxis.set_major_locator(plt.MaxNLocator(5))
 #ax.set_title("Dynamically coupled nodes have better estimates of each other's state",fontsize='xx-large')
 plt.tight_layout()
 # save the figure
-plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example.png",dpi=450)
-plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example.svg",dpi=450)
+plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +".png",dpi=450)
+plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +".svg",dpi=450)
 #plt.show()
 #plt.close('all')
     
@@ -116,7 +122,7 @@ ax.set_title("RMSE between every pair of nodes")
 plt.tight_layout()
 #plt.show()
 plt.close('all')
-
+# TODO - change this box and whisker into a scatter, there's not enough data points to justify a box and whisker
 # now each square in this heatmap except the diagonals (6x6=36 - 6 = 30) will be assigned to one of 7 bins: 
 # 3 upstream, 2 upstream, 1 upstream, 1 downstream, 2 downstream, 3 downstream, different branch
 # for the .loc indexing, the first index is the target, the second index is the predictor
@@ -154,8 +160,20 @@ fig, ax = plt.subplots(figsize=(12,9))
 #ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'])
 # do the same box plot command as above, but make every line thicker
 l_width = 5
-ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'],
-           boxprops=dict(linewidth=l_width),whiskerprops=dict(linewidth=l_width),capprops=dict(linewidth=l_width),medianprops=dict(linewidth=l_width))
+#ax.boxplot([up3,up2,up1,down1,down2,down3],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream'],
+#           boxprops=dict(linewidth=l_width),whiskerprops=dict(linewidth=l_width),capprops=dict(linewidth=l_width),medianprops=dict(linewidth=l_width))
+# make this a scatter plot instead
+mark_size = 200
+ax.scatter([1]*len(up3),up3,alpha=0.5, s = mark_size, color = 'b')
+ax.scatter([2]*len(up2),up2,alpha=0.5, s = mark_size, color = 'g')
+ax.scatter([3]*len(up1),up1,alpha=0.5, s = mark_size, color = 'r')
+ax.scatter([4]*len(down1),down1,alpha=0.5, s = mark_size, color = 'r')
+ax.scatter([5]*len(down2),down2,alpha=0.5, s = mark_size, color = 'g')
+ax.scatter([6]*len(down3),down3,alpha=0.5, s = mark_size, color = 'b')
+ax.scatter([7]*len(diff_branch),diff_branch,alpha=0.5, s = mark_size, color = 'k') # once results come in evaluate whether to keep this one or not
+# add the labels
+ax.set_xticks([1,2,3,4,5,6,7])
+ax.set_xticklabels(['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream','different branch'],fontsize='xx-large')
 #ax.legend(fontsize='x-large')
 ax.set_ylabel('RMSE \n(m)',fontsize='xx-large',rotation=0,labelpad=25)
 ax.set_xlabel('Position of predictor relative to target',fontsize='xx-large')
@@ -164,7 +182,7 @@ ax.tick_params(axis='x', which='major', labelsize='x-large')
 #ax.set_title('Relative network position influences value of local measurements in teammate state inference')
 plt.tight_layout()
 # save
-plt.savefig(str("C:/teamwork_without_talking/results/teammate_inference_relative_position_" + year + ".png"),dpi=450)
-plt.savefig(str("C:/teamwork_without_talking/results/teammate_inference_relative_position_" + year + ".svg"),dpi=450)
+plt.savefig(str("C:/teamwork_without_talking/results/teammate_inference_relative_position_"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +".png"),dpi=450)
+plt.savefig(str("C:/teamwork_without_talking/results/teammate_inference_relative_position_"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +".svg"),dpi=450)
 
 plt.show()
