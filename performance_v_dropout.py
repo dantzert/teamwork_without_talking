@@ -7,8 +7,8 @@ import datetime
 
 
 year = '2021' # '2020' or '2021'
-#control_scenarios = ['hi-fi','lo-fi','local']
-control_scenarios = ['hi-fi','lo-fi']
+control_scenarios = ['hi-fi','lo-fi','local']
+#control_scenarios = ['hi-fi','lo-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
@@ -16,9 +16,9 @@ for control_scenario in control_scenarios:
     for packet_loss in packet_loss_chances:
         # read in the corresponding cost file
         df = pd.read_csv("C:/teamwork_without_talking/results/"+str(control_scenario) + "_" + str(packet_loss) + "_summer_"+str(year) +"_costs.csv")
-        scores.at[control_scenario, packet_loss] = df[' total cost'][0]
+        #scores.at[control_scenario, packet_loss] = df[' total cost'][0]
         # try a higher penalty on TSS
-        #scores.at[control_scenario, packet_loss] = df['flood cost'][0] + df[' flow cost'][0] + 1000000*df[' TSS loading (kg)'][0]
+        scores.at[control_scenario, packet_loss] = df['flood cost'][0] + df[' flow cost'][0] + 1000*df[' TSS loading (kg)'][0]
     
 print(scores)
 

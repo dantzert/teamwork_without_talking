@@ -600,6 +600,9 @@ for outage_length in outage_lengths:
             print(key,"{:.4e}".format(num_positive*(10**1)))
             flood_cost += num_positive*(10**1)
 
+    # make flood_cost_volumetric to be the sum of the values across the keys in env.data_log['flooding']
+    flood_cost_volumetric = 10*sum([sum(value) for key,value in env.data_log['flooding'].items() if key in storage_nodes])
+
     flow_cost = 0
     for key,value in env.data_log['flow'].items():
         if key in valves:
@@ -608,9 +611,10 @@ for outage_length in outage_lengths:
                     flow_cost += (flow-flow_threshold_value)**2
 
     print("flood cost: {:.4e}".format(flood_cost))
+    print("flood cost volumetric: {:.4e}".format(flood_cost_volumetric))
     print("flow cost: {:.4e}".format(flow_cost))
     print("TSS loading (kg): {:.4e}".format(total_TSS_loading/2.2))
-    print("total cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
+    print("total cost: {:.4e}".format(flood_cost_volumetric + flow_cost + (total_TSS_loading/2.2)*10**3))
     # save the costs to a csv
     # format the outage_length so it can go in a filename
     outage_length_string = str(outage_length).replace(':','_')
@@ -618,7 +622,7 @@ for outage_length in outage_lengths:
     outage_length_string = outage_length_string.replace(',','')
     with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_synchronized_" + str(outage_length_string) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
         f.write("flood cost, flow cost, TSS loading (kg), total cost\n")
-        f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost,flow_cost,total_TSS_loading/2.2,flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
+        f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost_volumetric,flow_cost,total_TSS_loading/2.2,flood_cost_volumetric + flow_cost + (total_TSS_loading/2.2)*10**3))
 
     fig,axes = plt.subplots(6,2,figsize=(16,8))
     axes[0,0].set_title("Valves",fontsize='xx-large')

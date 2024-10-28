@@ -19,7 +19,7 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
-control_scenario = 'local' 
+control_scenario = 'hi-fi' 
 year = '2021' # '2020' or '2021'
 verbose = True
 
@@ -184,8 +184,8 @@ if control_scenario == 'centralized' or control_scenario == 'uncontrolled':
     packet_loss_chances = [0.0]
 else:
     #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999] # as originally submitted
-    packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0] # with "never"
-    #packet_loss_chances = [1.0] # trying something
+    #packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0] # with "never"
+    packet_loss_chances = [0.9999] # trying something
 
     # at the low end no chance of packet loss, report every 5 minutes
     # at the high end, expect to report every 35 days
@@ -196,8 +196,8 @@ for packet_loss_chance in packet_loss_chances:
     env = pystorms.scenarios.gamma()
     env.env.sim = pyswmm.simulation.Simulation(r"C:\\teamwork_without_talking\\gamma.inp") # 2.0.0 release raises a spurious multi-sim error. revert to 1.5.1
     # if you want a shorter timeframe than the entire summer so you can debug the controller
-    #env.env.sim.start_time = datetime.datetime(2020,5,14,0,0)
-    #env.env.sim.end_time = datetime.datetime(2020,5,20,0,0) 
+    #env.env.sim.start_time = datetime.datetime(2021,6,15,0,0)
+    #env.env.sim.end_time = datetime.datetime(2021,8,15,0,0) 
     #env.env.sim.end_time = datetime.datetime(2020,6,15,0,0) 
     env.env.sim.start()
     done = False
@@ -580,6 +580,7 @@ for packet_loss_chance in packet_loss_chances:
     storage_nodes = ["1","4","6","7","8","10"]
 
     flood_cost = 0
+
     for key,value in env.data_log['flooding'].items():    
         if sum(value) > 0 and key in storage_nodes:
             # the total cost is the number of positive entries in value multiplied by the cost of flooding (10e6)
@@ -587,6 +588,9 @@ for packet_loss_chance in packet_loss_chances:
             num_positive = sum([1 for x in value if x > 0])
             print(key,"{:.4e}".format(num_positive*(10**1)))
             flood_cost += num_positive*(10**1)
+
+    # make flood_cost_volumetric to be the sum of the values across the keys in env.data_log['flooding']
+    flood_cost_volumetric = 10*sum([sum(value) for key,value in env.data_log['flooding'].items() if key in storage_nodes])
 
     flow_cost = 0
     for key,value in env.data_log['flow'].items():
@@ -596,13 +600,14 @@ for packet_loss_chance in packet_loss_chances:
                     flow_cost += (flow-flow_threshold_value)**2
 
     print("flood cost: {:.4e}".format(flood_cost))
+    print("flood cost volumetric: {:.4e}".format(flood_cost_volumetric))
     print("flow cost: {:.4e}".format(flow_cost))
     print("TSS loading (kg): {:.4e}".format(total_TSS_loading/2.2))
-    print("total cost: {:.4e}".format(flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
+    print("total cost: {:.4e}".format(flood_cost_volumetric + flow_cost + (total_TSS_loading/2.2)*10**3))
     # save the costs to a csv
     with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_" +str(year) + "_costs.csv"), 'w') as f:
         f.write("flood cost, flow cost, TSS loading (kg), total cost\n")
-        f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost,flow_cost,total_TSS_loading/2.2,flood_cost + flow_cost + (total_TSS_loading/2.2)*10**3))
+        f.write("{:.4e},{:.4e},{:.4e},{:.4e}\n".format(flood_cost_volumetric,flow_cost,total_TSS_loading/2.2,flood_cost_volumetric + flow_cost + (total_TSS_loading/2.2)*10**3))
 
     fig,axes = plt.subplots(6,2,figsize=(16,8))
     axes[0,0].set_title("Valves",fontsize='xx-large')

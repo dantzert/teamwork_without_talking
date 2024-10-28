@@ -11,9 +11,9 @@ from seaborn._core.properties import LineStyle
 
 year = '2021' # or '2021'
 duration = 'full' # 'full' or 'storm'
-dropout_rate = '0.9993_' # many options for this one, see tune_control.py
+dropout_rate = '1.0_' # many options for this one, see tune_control.py
 outage_length = "90_days_0_00_00" # XX_days_HH_MM_SS
-experiment = "synchronized" # "dropout" or "synchronized"
+experiment = "dropout" # "dropout" or "synchronized"
 # include the _ after to make sure you don't include file names for which this is a substring (e.g., 0.99 also grabs 0.999 and 0.9999)
 control_scenarios = ['centralized','hi-fi','lo-fi','local']
 #control_scenarios = ['centralized','hi-fi']
