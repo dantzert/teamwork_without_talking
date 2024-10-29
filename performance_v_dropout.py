@@ -8,7 +8,7 @@ import datetime
 
 year = '2021' # '2020' or '2021'
 control_scenarios = ['hi-fi','lo-fi','local']
-#control_scenarios = ['hi-fi','lo-fi']
+#control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
@@ -52,8 +52,10 @@ print("{:.2e}".format(uncontrolled_cost))
 # plot the scores with cost as the y axis and expected report frequency as the x axis
 l_width = 7
 fig, ax = plt.subplots(figsize=(10,7.5)) # 12x9 for paper figure, smaller for abstract (relatively bigger text)
-#ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='high fidelity', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
-ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='new method', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
+if len(control_scenarios) < 2:
+    ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='new method', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
+else:
+    ax.plot(expected_report_frequency, 1 - scores.loc['hi-fi']/uncontrolled_cost, label='high fidelity', linestyle='dashed',color='blue', marker='o', linewidth=l_width, markersize = 3*l_width)
 
 try:
     ax.plot(expected_report_frequency, 1 - scores.loc['lo-fi']/uncontrolled_cost, label='low fidelity', linestyle='dotted',color='red', marker='o', linewidth=l_width, markersize = 3*l_width)

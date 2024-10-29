@@ -20,7 +20,7 @@ np.random.seed(0)
 
 # centralized and uncontrolled never need to be run in this script as they'll be the exact same as in "tune_control.py"
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
-control_scenario = 'lo-fi' 
+control_scenario = 'local' 
 year = '2021' # '2020' or '2021'
 verbose = True
 

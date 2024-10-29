@@ -8,14 +8,14 @@ import datetime
 
 year = '2021' # '2020' or '2021'
 control_scenarios = ['hi-fi','lo-fi','local']
-#control_scenarios = ['hi-fi']
+#control_scenarios = ['hi-fi','lo-fi']
 outage_lengths = [datetime.timedelta(minutes=5),datetime.timedelta(minutes=10),datetime.timedelta(minutes=15),
                       datetime.timedelta(minutes=30),datetime.timedelta(hours=1),datetime.timedelta(hours=2),
                       datetime.timedelta(hours=4),datetime.timedelta(hours=8),datetime.timedelta(days=1),
                       datetime.timedelta(days=2),datetime.timedelta(days=3),datetime.timedelta(days=7),
                       datetime.timedelta(days=14),datetime.timedelta(days=30),datetime.timedelta(days=60),
                       datetime.timedelta(days=90),datetime.timedelta(days=120)]
-outage_lengths = [datetime.timedelta(days=90)] # for dev
+#outage_lengths = [datetime.timedelta(days=90)] # for dev
 
 scores = pd.DataFrame(index=control_scenarios, columns=outage_lengths)
 
