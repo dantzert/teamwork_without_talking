@@ -10,8 +10,8 @@ ft2meters = 0.3048
 
 year = "2021" # or "2021"
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'hi-fi' 
-packet_loss_chance = 0.9993
+control_scenario = 'lo-fi' 
+packet_loss_chance = 0.9995
 
 # for figure 5, just need to load in the timeseries of estiamtes of one node by several other nodes
 perspectives = ['truth','server','1','4','6','7','8','10']
@@ -68,8 +68,8 @@ fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.14,0.09], transform=ax.t
 # if it's hard to see, you might want to bound the x-axis to a smaller range. just use set_xlim
 #ax.set_xlim([datetime.datetime(2020, 5, 1, 0, 0), datetime.datetime(2020, 7, 1, 0, 10)])
 # for 2021
-ax.set_xlim([datetime.datetime(2021,4,15,0,0),datetime.datetime(2021,5,15,0,10)])
-ax.set_ylim([-1,1.5])
+ax.set_xlim([datetime.datetime(2021,8,29,0,0),datetime.datetime(2021,9,20,0,10)])
+ax.set_ylim([-0.5,1.5])
 
 # make the y label horizontal
 ax.set_ylabel('Node 8\nDepth (m)',fontsize='xx-large',rotation=0,labelpad=30)
@@ -82,7 +82,7 @@ plt.tight_layout()
 # save the figure
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +".png",dpi=450)
 plt.savefig("C:/teamwork_without_talking/results/teammate_inference_single_example"+str(control_scenario) + "_" + str(packet_loss_chance) + "_summer_"+str(year) +".svg",dpi=450)
-#plt.show()
+plt.show()
 #plt.close('all')
     
 
@@ -172,6 +172,10 @@ ax.scatter([5]*len(down2),down2,alpha=0.5, s = mark_size, color = 'g')
 ax.scatter([6]*len(down3),down3,alpha=0.5, s = mark_size, color = 'b')
 ax.scatter([7]*len(diff_branch),diff_branch,alpha=0.5, s = mark_size, color = 'k') # once results come in evaluate whether to keep this one or not
 # add the labels
+# if lo-fi, set the y axis to be log scale
+if control_scenario == 'lo-fi':
+    ax.set_yscale('log')
+
 ax.set_xticks([1,2,3,4,5,6,7])
 ax.set_xticklabels(['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream','different branch'],fontsize='xx-large')
 #ax.legend(fontsize='x-large')

@@ -19,9 +19,9 @@ np.set_printoptions(precision=3,suppress=True)
 np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'hi-fi' 
+control_scenario = 'lo-fi' 
 verbose = True
-packet_loss_chance = 0.9993
+packet_loss_chance = 0.9995
 year = '2021'
 
 print("evaluating ", control_scenario)
