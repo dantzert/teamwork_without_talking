@@ -68,7 +68,8 @@ except:
 ax.axhline(y=1 - centralized_cost/uncontrolled_cost, linestyle='solid', label='centralized',color='black', linewidth=l_width)
 #ax.axhline(y=uncontrolled_cost, linestyle='dashed', label='uncontrolled',color='black', linewidth=l_width)
 ax.set_xlabel('Expected Report Frequency',fontsize='xx-large')
-ax.set_ylabel('Cost\nReduction\nfrom\nUncontrolled',fontsize='xx-large',labelpad = -120)
+# ax.set_ylabel('Cost\nReduction\nfrom\nUncontrolled',fontsize='xx-large',labelpad = -120) # original submission
+ax.set_ylabel('Cost\nReduction\nfrom\nUncontrolled',fontsize='xx-large',labelpad = 40) 
 # rotate the y label
 ax.yaxis.label.set_rotation(0)
 ax.legend(loc='lower left',fontsize='xx-large')

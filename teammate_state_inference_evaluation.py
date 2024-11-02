@@ -10,7 +10,7 @@ ft2meters = 0.3048
 
 year = "2021" # or "2021"
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
-control_scenario = 'lo-fi' 
+control_scenario = 'hi-fi' 
 packet_loss_chance = 0.9995
 
 # for figure 5, just need to load in the timeseries of estiamtes of one node by several other nodes
@@ -40,36 +40,47 @@ for perspective in ['truth','4','6','7']:
     elif perspective == '7':
         color = 'red'
         style = 'dashdot'
-    ax.plot(records[perspective]['8']*ft2meters, label=perspective,alpha=0.6,linewidth=7,color=color,linestyle = style)
+        
+    if perspective != "truth":
+        ax.plot(records[perspective]['8']*ft2meters, label=str("estimate maintained by " + perspective),alpha=0.6,linewidth=7,color=color,linestyle = style)
+    else:
+        ax.plot(records[perspective]['8']*ft2meters, label="measurement",alpha=0.6,linewidth=7,color=color,linestyle = style)
 
 ax.legend(fontsize='xx-large',loc='upper left')
 
 # annotate the RMSE between 1,4, and 8 and the truth
 idx = 0
 for perspective in ['4','6','7']:
+    if perspective == '4':
+        color = 'blue'
+    elif perspective == '6':
+        color = 'green'
+    elif perspective == '7':
+        color = 'red'
+
     rmse = np.sqrt(np.mean((records[perspective]['8']-records['truth']['8'])**2))
-    ax.text(0.2,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + " m",transform=ax.transAxes,fontsize='xx-large')
+    ax.text(0.7,0.9-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + " m",transform=ax.transAxes,fontsize='xx-large', color=color)
     # add the NSE as well
     #nse = 1 - np.sum((records[perspective]['8']-records['truth']['10'])**2)/np.sum((records['truth']['10']-np.mean(records['truth']['10']))**2)
     #ax.text(0.2,0.2-idx*0.05,perspective + " RMSE: " + str(round(rmse,2)) + "m, NSE: " + str(round(nse,2)),transform=ax.transAxes,fontsize='x-large')
     idx += 1
     
 # draw a little sketch in text that shows the network topology: 10 and 8 both connect to 4, 4 connects to 1
-ax.text(0.51,0.25,"7",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.6,0.25,"8",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.55,0.15,"6",transform=ax.transAxes,fontsize='xx-large')
-ax.text(0.55,0.05,"4",transform=ax.transAxes,fontsize='xx-large')
+ax.text(0.51,0.95,"7",transform=ax.transAxes,fontsize='xx-large', color = 'red')
+ax.text(0.6,0.95,"8",transform=ax.transAxes,fontsize='xx-large', color = 'black')
+ax.text(0.55,0.85,"6",transform=ax.transAxes,fontsize='xx-large', color = 'green')
+ax.text(0.55,0.75,"4",transform=ax.transAxes,fontsize='xx-large', color=  'blue')
 skeleton_linewidth = 2
 skeleton_alpha = 0.5
-fig.add_artist(matplotlib.lines.Line2D([0.53, 0.55], [0.24,0.17], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 10 to 4
-fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.25,0.17], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 7 to 4
-fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.14,0.09], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 4 to 1
+fig.add_artist(matplotlib.lines.Line2D([0.53, 0.55], [0.94,0.87], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 10 to 4
+fig.add_artist(matplotlib.lines.Line2D([0.60, 0.57], [0.95,0.87], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 7 to 4
+fig.add_artist(matplotlib.lines.Line2D([0.56, 0.56], [0.84,0.79], transform=ax.transAxes, color='black', linestyle='solid', linewidth=skeleton_linewidth,alpha=skeleton_alpha)) # 4 to 1
 
 # if it's hard to see, you might want to bound the x-axis to a smaller range. just use set_xlim
 #ax.set_xlim([datetime.datetime(2020, 5, 1, 0, 0), datetime.datetime(2020, 7, 1, 0, 10)])
 # for 2021
 ax.set_xlim([datetime.datetime(2021,8,29,0,0),datetime.datetime(2021,9,20,0,10)])
-ax.set_ylim([-0.5,1.5])
+ax.set_ylim([-0.25,1.5])
 
 # make the y label horizontal
 ax.set_ylabel('Node 8\nDepth (m)',fontsize='xx-large',rotation=0,labelpad=30)
