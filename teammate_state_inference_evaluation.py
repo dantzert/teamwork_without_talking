@@ -11,7 +11,7 @@ ft2meters = 0.3048
 year = "2021" # or "2021"
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
 control_scenario = 'hi-fi' 
-packet_loss_chance = 0.9995
+packet_loss_chance = 0.9995 # (0.9995 is one week)
 
 # for figure 5, just need to load in the timeseries of estiamtes of one node by several other nodes
 perspectives = ['truth','server','1','4','6','7','8','10']
@@ -164,7 +164,7 @@ difference_over_distance.loc['diff_branch','mean'] = np.mean(diff_branch)
 '''
 
 # now plot a line chart where each xtick is one of the 7 bins, and the y value is the average RMSE in that bin
-fig, ax = plt.subplots(figsize=(12,9))
+fig, ax = plt.subplots(figsize=(14,9))
 # plot box plots of each bin, labeled by their names. in the order up3, up2, up1, down1, down2, down3, diff_branch
 #ax.boxplot([up3,up2,up1,down1,down2,down3,diff_branch],labels=['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream','different branch'])
 # exclude "different branch" for now
@@ -175,17 +175,21 @@ l_width = 5
 #           boxprops=dict(linewidth=l_width),whiskerprops=dict(linewidth=l_width),capprops=dict(linewidth=l_width),medianprops=dict(linewidth=l_width))
 # make this a scatter plot instead
 mark_size = 200
-ax.scatter([1]*len(up3),up3,alpha=0.5, s = mark_size, color = 'b')
-ax.scatter([2]*len(up2),up2,alpha=0.5, s = mark_size, color = 'g')
-ax.scatter([3]*len(up1),up1,alpha=0.5, s = mark_size, color = 'r')
-ax.scatter([4]*len(down1),down1,alpha=0.5, s = mark_size, color = 'r')
-ax.scatter([5]*len(down2),down2,alpha=0.5, s = mark_size, color = 'g')
-ax.scatter([6]*len(down3),down3,alpha=0.5, s = mark_size, color = 'b')
-ax.scatter([7]*len(diff_branch),diff_branch,alpha=0.5, s = mark_size, color = 'k') # once results come in evaluate whether to keep this one or not
+ax.scatter([1]*len(up3),up3,alpha=0.4, s = mark_size, color = 'b')
+ax.scatter([2]*len(up2),up2,alpha=0.4, s = mark_size, color = 'g')
+ax.scatter([3]*len(up1),up1,alpha=0.4, s = mark_size, color = 'r')
+ax.scatter([4]*len(down1),down1,alpha=0.4, s = mark_size, color = 'r')
+ax.scatter([5]*len(down2),down2,alpha=0.4, s = mark_size, color = 'g')
+ax.scatter([6]*len(down3),down3,alpha=0.4, s = mark_size, color = 'b')
+ax.scatter([7]*len(diff_branch),diff_branch,alpha=0.4, s = mark_size, color = 'k') # once results come in evaluate whether to keep this one or not
 # add the labels
 # if lo-fi, set the y axis to be log scale
 if control_scenario == 'lo-fi':
     ax.set_yscale('log')
+
+# add faint horizontal grid lines
+ax.yaxis.grid(True, linestyle='--', which='both', color='black', alpha = 0.5)
+#ax.yaxis.grid(True, linestyle='-.', which='minor', color='black', alpha = 0.25)
 
 ax.set_xticks([1,2,3,4,5,6,7])
 ax.set_xticklabels(['3 upstream','2 upstream','1 upstream','1 downstream','2 downstream','3 downstream','different branch'],fontsize='xx-large')
