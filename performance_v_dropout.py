@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import datetime
 
 
-year = '2021' # '2020' or '2021'
+year = '2020' # '2020' or '2021'
 control_scenarios = ['hi-fi','lo-fi','local']
 #control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0]
