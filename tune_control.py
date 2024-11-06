@@ -20,7 +20,7 @@ np.random.seed(0)
 
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local' ('uncontrolled')
 control_scenario = 'local' 
-year = '2021' # '2020' or '2021'
+year = '2020' # '2020' or '2021'
 verbose = True
 
 print("evaluating ", control_scenario)
@@ -650,7 +650,7 @@ for packet_loss_chance in packet_loss_chances:
     plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".png"),dpi=450)
     plt.savefig(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".svg"),dpi=450)
     #plt.show(block=True)
-    #plt.close('all')
+    plt.close('all')
 
     # save the data log
     with open(str("C:/teamwork_without_talking/results/" + control_scenario + "_" + str(packet_loss_chance) + "_summer_"+str(year) + ".pkl"), 'wb') as f:

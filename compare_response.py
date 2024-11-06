@@ -10,7 +10,7 @@ from seaborn._core.properties import LineStyle
 
 
 year = '2021' # or '2021'
-duration = 'storm' # 'full' or 'storm'
+duration = 'full' # 'full' or 'storm'
 dropout_rate = '0.9995_' # many options for this one, see tune_control.py (0.9995 is one week)
 outage_length = "90_days_0_00_00" # XX_days_HH_MM_SS
 experiment = "dropout" # "dropout" or "synchronized"

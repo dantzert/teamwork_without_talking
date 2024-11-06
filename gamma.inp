@@ -15,11 +15,11 @@ SKIP_STEADY_STATE    NO
 
 IGNORE_SNOWMELT      YES
 IGNORE_GROUNDWATER   YES
-START_DATE           03/01/2021
+START_DATE           03/01/2020
 START_TIME           00:00:00
-REPORT_START_DATE    03/01/2021
+REPORT_START_DATE    03/01/2020
 REPORT_START_TIME    00:00:00
-END_DATE             10/15/2021
+END_DATE             10/15/2020
 END_TIME             00:00:00
 SWEEP_START          01/01
 SWEEP_END            12/31
@@ -526,13 +526,13 @@ Residential      TSS              EMC        29         2          0.0        0.
 [TIMESERIES]
 ;;Name           Date       Time       Value     
 ;;-------------- ---------- ---------- ----------
-raingage_J       FILE "raingage_J_summer_2021.dat"
+raingage_J       FILE "raingage_J_summer_2020.dat"
 ;
-raingage_S       FILE "raingage_S_summer_2021.dat"
+raingage_S       FILE "raingage_S_summer_2020.dat"
 ;
-raingage_C       FILE "raingage_C_summer_2021.dat"
+raingage_C       FILE "raingage_C_summer_2020.dat"
 ;
-raingage_N       FILE "raingage_N_summer_2021.dat"
+raingage_N       FILE "raingage_N_summer_2020.dat"
 
 [REPORT]
 ;;Reporting Options

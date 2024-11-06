@@ -188,7 +188,7 @@ if control_scenario == 'lo-fi':
     ax.set_yscale('log')
 
 # add faint horizontal grid lines
-ax.yaxis.grid(True, linestyle='--', which='both', color='black', alpha = 0.5)
+ax.yaxis.grid(True, linestyle='--', which='major', color='black', alpha = 0.5)
 #ax.yaxis.grid(True, linestyle='-.', which='minor', color='black', alpha = 0.25)
 
 ax.set_xticks([1,2,3,4,5,6,7])
