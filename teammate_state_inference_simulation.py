@@ -22,7 +22,7 @@ np.random.seed(0)
 control_scenario = 'lo-fi' 
 verbose = True
 packet_loss_chance = 0.9995
-year = '2021'
+year = '2020'
 
 print("evaluating ", control_scenario)
 

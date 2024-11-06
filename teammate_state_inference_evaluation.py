@@ -8,7 +8,7 @@ import datetime
 
 ft2meters = 0.3048
 
-year = "2021" # or "2021"
+year = "2020" # or "2021"
 # options are: 'centralized', 'hi-fi', 'lo-fi', and 'local'
 control_scenario = 'hi-fi' 
 packet_loss_chance = 0.9995 # (0.9995 is one week)
