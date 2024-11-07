@@ -6,9 +6,9 @@ import matplotlib.pyplot as plt
 import datetime
 
 
-year = '2020' # '2020' or '2021'
-control_scenarios = ['hi-fi','lo-fi','local']
-#control_scenarios = ['hi-fi']
+year = '2021' # '2020' or '2021'
+#control_scenarios = ['hi-fi','lo-fi','local']
+control_scenarios = ['hi-fi']
 packet_loss_chances = [0.0,0.2,0.5,0.8,0.9,0.95,0.98,0.99,0.999,0.9993,0.9995,0.9997,0.9999, 1.0]
 scores = pd.DataFrame(index=control_scenarios, columns=packet_loss_chances)
 
@@ -83,11 +83,15 @@ ax.yaxis.set_major_formatter(matplotlib.ticker.PercentFormatter(xmax=1))
 plt.ylim(bottom=0)
 #add a vertical line at the 5.0 days label
 ax.axvline(x=10, linestyle='dotted', color='black', linewidth=l_width)
-plt.tight_layout()
+
 # save the plot
 if len(control_scenarios) < 2:
+    plt.title("New method maintains centralized performance\nwithout communication for a week",fontsize='xx-large')
+    plt.tight_layout()
     plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+"_abstract_version.png",dpi=450)
     plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+"_abstract_version.svg",dpi=450)
-plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+".png",dpi=450)
-plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+".svg",dpi=450)
+else:
+    plt.tight_layout()
+    plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+".png",dpi=450)
+    plt.savefig("C:/teamwork_without_talking/results/expected_report_frequency_vs_cost_"+str(year)+".svg",dpi=450)
 plt.show()
